@@ -1,16 +1,13 @@
 [package]
-distribution = "2201.12.0"
+distribution = "2201.13.0"
 org = "ballerinax"
 name = "reckon.one"
 version = "@toml.version@"
 license = ["Apache-2.0"]
 authors = ["Ballerina"]
-keywords = [] # TODO: Add keywords
-# icon = "icon.png" # TODO: Add icon
+keywords = ["Vendor/Reckon", "Area/Finance & Accounting", "Type/Connector"]
+icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-reckon.one"
 
 [build-options]
 observabilityIncluded = true
-
-[platform.java21]
-graalvmCompatible = true

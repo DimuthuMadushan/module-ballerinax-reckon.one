@@ -2,13 +2,13 @@
 
 The `ballerinax/reckon.one` connector provides practical examples illustrating usage in various scenarios.
 
-[//]: # (TODO: Add examples)
-1. 
-2. 
+1. [Customer invoice creation](./customer_invoice_creation/customer_invoice_creation.md) - Create a customer, raise an invoice for it and read the invoice back.
+2. [Supplier bill summary](./supplier_bill_summary/supplier_bill_summary.md) - Page through all bills and suppliers in a book and total the outstanding balance per supplier.
 
 ## Prerequisites
 
-[//]: # (TODO: Add prerequisites)
+- Ballerina Swan Lake 2201.12.0 or later
+- An access token for a Reckon One book. Each example documents the `Config.toml` values it needs.
 
 ## Running an example
 

@@ -1,26 +1,73 @@
 # Ballerina Reckon One connector
 
 [![Build](https://github.com/ballerina-platform/module-ballerinax-reckon.one/actions/workflows/ci.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-reckon.one/actions/workflows/ci.yml)
-[![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-reckon.one.svg)](https://github.com/ballerina-platform/module-ballerinax-reckon.one/commits/master)
-[![GitHub Issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-library/module/reckon.one.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-library/labels/module%reckon.one)
+[![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-reckon.one.svg)](https://github.com/ballerina-platform/module-ballerinax-reckon.one/commits/main)
+[![GitHub Issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-library/module/reckon.one.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-library/labels/module%2Freckon.one)
 
 ## Overview
 
-[//]: # (TODO: Add overview mentioning the purpose of the module, supported REST API versions, and other high-level details.)
+[Reckon One](https://www.reckon.com/au/products/reckon-one/) is a cloud accounting platform for small businesses and their accountants. The Reckon One connector gives Ballerina programs access to version 2 of the Reckon One API, so you can read and manage the accounting data held in a Reckon One book from your integrations.
 
 ## Setup guide
 
-[//]: # (TODO: Add detailed steps to obtain credentials and configure the module.)
+To use the Reckon One connector you need an access token for a Reckon One book.
+
+1. Sign in to your Reckon One account, or create one if you do not have one.
+
+2. Register an application with Reckon so that you receive a client ID and client secret for the Reckon One API.
+
+3. Authorize your application with the OAuth 2.0 authorization code flow against the Reckon identity server (`https://identity.reckon.com/connect/authorize`), granting the `read` and `write` scopes.
+
+4. Exchange the authorization code for an access token, and a refresh token, at `https://identity.reckon.com/connect/token`.
+
+5. Note the ID of the book you want to work with. You can list the books available to your user with the connector's `listBooks` operation.
 
 ## Quickstart
 
-[//]: # (TODO: Add a quickstart guide to demonstrate a basic functionality of the module, including sample code snippets.)
+To use the Reckon One connector in your Ballerina application, update the `.bal` file as follows:
+
+### Step 1: Import the module
+
+```ballerina
+import ballerinax/reckon.one;
+```
+
+### Step 2: Create a new connector instance
+
+Add the access token to a `Config.toml` file:
+
+```toml
+accessToken = "<your-access-token>"
+```
+
+Then create the client in your `.bal` file:
+
+```ballerina
+configurable string accessToken = ?;
+
+final one:Client reckon = check new ({auth: {token: accessToken}});
+```
+
+### Step 3: Invoke the connector operation
+
+```ballerina
+public function main() returns error? {
+    one:Books _ = check reckon->listBooks();
+}
+```
+
+### Step 4: Run the Ballerina application
+
+```bash
+bal run
+```
 
 ## Examples
 
-The `Reckon One` connector provides practical examples illustrating usage in various scenarios. Explore these [examples](https://github.com/module-ballerinax-reckon.one/tree/main/examples/), covering the following use cases:
+The `Reckon One` connector provides practical examples illustrating usage in various scenarios. Explore these [examples](https://github.com/ballerina-platform/module-ballerinax-reckon.one/tree/main/examples/), covering the following use cases:
 
-[//]: # (TODO: Add examples)
+1. [Customer invoice creation](examples/customer_invoice_creation/customer_invoice_creation.md) - Create a customer, raise an invoice for it and read the invoice back.
+2. [Supplier bill summary](examples/supplier_bill_summary/supplier_bill_summary.md) - Page through all bills and suppliers in a book and total the outstanding balance per supplier.
 
 ## Build from the source
 

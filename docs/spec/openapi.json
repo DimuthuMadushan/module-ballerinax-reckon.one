@@ -3,9 +3,17 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Reckon One API v2",
-    "description": "This is version 2 of the Reckon One API.",
+    "description": "Manage accounting data in Reckon One books, including customers, suppliers, invoices, bills, banking, payroll and superannuation records.",
     "version": "V2"
   },
+  "security": [
+    {
+      "oauth2": [
+        "read",
+        "write"
+      ]
+    }
+  ],
   "servers": [
     {
       "url": "https://api-v2.reckonone.com"
@@ -1729,68 +1737,6 @@
         }
       }
     },
-    "/{bookId}/banking/banktransactionlinks": {
-      "get": {
-        "tags": [
-          "Banking"
-        ],
-        "summary": "Gets the allocation status of the given bank transaction IDs.",
-        "description": "---\n            \nGet the allocation status of the given bank transaction IDs.\n            \n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/banking/banktransactionlinks`\n            \n---",
-        "operationId": "Banking_GetBankTransactionLinks",
-        "parameters": [
-          {
-            "name": "bookId",
-            "in": "path",
-            "required": true,
-            "description": "The book's id.",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "requestBody": {
-          "x-name": "bankTransactionIds",
-          "description": "The list of bank transaction IDs to retrieve allocation status for.\nIf a bank transaction ID is not allocated, then the bank transaction ID will not be in the output.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "format": "guid"
-                }
-              }
-            }
-          },
-          "required": true,
-          "x-position": 2
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ListResponseOfBankTransactionLink"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "The authentication token is missing, expired or invalid.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseUnauthorized"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/{bookId}/banking/reconciliations": {
       "post": {
         "tags": [
@@ -1827,7 +1773,7 @@
         },
         "responses": {
           "200": {
-            "description": "",
+            "description": "The details of the bank reconciliation that has been started.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1893,7 +1839,7 @@
         ],
         "responses": {
           "204": {
-            "description": ""
+            "description": "The reconciliation has been finished."
           },
           "400": {
             "description": "",
@@ -3386,7 +3332,7 @@
         "tags": [
           "Bills"
         ],
-        "summary": "Deletes an existing line item.",
+        "summary": "Deletes an existing bill line item.",
         "description": "Deletes an existing line item.\n\n`DELETE /5af6572c-9771-4b86-995d-3374d3bc683c/bills/b581a643-10dd-4d09-9a63-356654339795/lineitems/907f8858-91c5-47f7-ba92-42d4b4b27973`",
         "operationId": "Bills_DeleteLineItem",
         "parameters": [
@@ -7733,7 +7679,7 @@
         "tags": [
           "Credit notes"
         ],
-        "summary": "Creates a new transaction link.",
+        "summary": "Creates a new credit note transaction link.",
         "description": "Create a new transaction link.\n\n`POST /5af6572c-9771-4b86-995d-3374d3bc683c/creditnotes/e6abf51e-2052-43c7-be02-4146cbfe9d00/transactionlinks`",
         "operationId": "CreditNotes_CreateCreditNoteTransactionLink",
         "parameters": [
@@ -11273,7 +11219,7 @@
         },
         "responses": {
           "204": {
-            "description": ""
+            "description": "The default super fund has been saved."
           },
           "400": {
             "description": "The default super fund could not be saved due to invalid input data.",
@@ -11339,7 +11285,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "The default super fund for the book.",
             "content": {
               "application/json": {
                 "schema": {
@@ -11412,7 +11358,7 @@
         ],
         "responses": {
           "204": {
-            "description": ""
+            "description": "The default super fund has been removed."
           },
           "400": {
             "description": "The default super fund could not be removed due to invalid input data.",
@@ -15694,7 +15640,7 @@
         "tags": [
           "Expense Claims"
         ],
-        "summary": "Deletes an existing line item.",
+        "summary": "Deletes an existing expense claim line item.",
         "description": "Delete an existing line item.\n\n`DELETE /5af6572c-9771-4b86-995d-3374d3bc683c/expenseclaims/b581a643-10dd-4d09-9a63-356654339795/lineitems/907f8858-91c5-47f7-ba92-42d4b4b27973`",
         "operationId": "ExpenseClaims_DeleteLineItem",
         "parameters": [
@@ -16113,10 +16059,11 @@
         "tags": [
           "Heartbeat"
         ],
+        "summary": "Triggers a test error to verify error handling.",
         "operationId": "Heartbeat_ThrowError",
         "responses": {
           "200": {
-            "description": "",
+            "description": "Confirmation that the test error request was processed.",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -16134,10 +16081,11 @@
         "tags": [
           "Heartbeat"
         ],
+        "summary": "Writes a test log entry to verify logging.",
         "operationId": "Heartbeat_LogTest",
         "responses": {
           "200": {
-            "description": "",
+            "description": "Confirmation that the test log entry was written.",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -16583,6 +16531,7 @@
         "parameters": [
           {
             "name": "page",
+            "description": "The page to retrieve.",
             "in": "query",
             "schema": {
               "type": "integer",
@@ -16593,6 +16542,7 @@
           },
           {
             "name": "perPage",
+            "description": "The number of business types per page.",
             "in": "query",
             "schema": {
               "type": "integer",
@@ -16719,6 +16669,7 @@
           "Invoice Reminder Templates"
         ],
         "description": "Create a new invoice reminder template.\n\n`POST /5af6572c-9771-4b86-995d-3374d3bc683c/invoiceremindertemplates`",
+        "summary": "Creates a new invoice reminder template.",
         "operationId": "InvoiceReminderTemplates_CreateInvoicesReminderTemplate",
         "parameters": [
           {
@@ -16899,6 +16850,7 @@
           "Invoice Reminder Templates"
         ],
         "description": "Get a particular invoice reminder template.\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/invoiceremindertemplates/b696b9f5-e1e7-41f1-9f44-fa047e5e9ad2`\n\n---\n\nGet just the required fields, e.g. id and total amount. Find out more about [selecting](https://help.reckon.com/article/h9sxz6smwn-reckon-one-api-v2-selecting).\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/invoiceremindertemplates/b696b9f5-e1e7-41f1-9f44-fa047e5e9ad2?select=id,body`\n\n---\n\n\n---",
+        "summary": "Gets a particular invoice reminder template.",
         "operationId": "InvoiceReminderTemplates_GetInvoiceReminderTemplate",
         "parameters": [
           {
@@ -16972,6 +16924,7 @@
           "Invoice Reminder Templates"
         ],
         "description": "Update an invoice reminder template.\n\n`POST /5af6572c-9771-4b86-995d-3374d3bc683c/invoiceremindertemplates`",
+        "summary": "Updates parts of an invoice reminder template.",
         "operationId": "InvoiceReminderTemplates_PatchInvoicesReminderTemplate",
         "parameters": [
           {
@@ -18169,6 +18122,7 @@
         "parameters": [
           {
             "name": "bookId",
+            "description": "The book's id.",
             "in": "path",
             "required": true,
             "schema": {
@@ -18179,6 +18133,7 @@
           },
           {
             "name": "invoiceId",
+            "description": "The invoice's id.",
             "in": "path",
             "required": true,
             "schema": {
@@ -18190,6 +18145,7 @@
         ],
         "requestBody": {
           "x-name": "email",
+          "description": "Details of the email.",
           "content": {
             "application/json": {
               "schema": {
@@ -18202,7 +18158,7 @@
         },
         "responses": {
           "204": {
-            "description": ""
+            "description": "The invoice email has been sent."
           },
           "400": {
             "description": "The invoice could not be sent.",
@@ -19286,7 +19242,7 @@
         "tags": [
           "Invoices"
         ],
-        "summary": "Deletes an existing line item.",
+        "summary": "Deletes an existing invoice line item.",
         "description": "Delete an existing line item.\n\n`DELETE /5af6572c-9771-4b86-995d-3374d3bc683c/invoices/b581a643-10dd-4d09-9a63-356654339795/lineitems/907f8858-91c5-47f7-ba92-42d4b4b27973`",
         "operationId": "Invoices_DeleteLineItem",
         "parameters": [
@@ -23612,7 +23568,7 @@
         "tags": [
           "Payments"
         ],
-        "summary": "Gets a list of transactions.",
+        "summary": "Gets the allocated and allocable transactions for a payment.",
         "description": "Gets a list of transactions.\n            \n---\n\nGet a list of allocable transactions for the specified book, entity and payable type.\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/payments/allocatableTransactions/entity/e6abf51e-2052-43c7-be02-4146cbfe9d00/accountspayable/`\n            \n---\n            \nGet a list of allocated (full or partial) and allocable transactions for the specific book, entity, payable type and linked payment. \n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/payments/allocatableTransactions/entity/e6abf51e-2052-43c7-be02-4146cbfe9d00/accountspayable/158aac35-1009-4f4c-aed3-bc1a1544aef5`",
         "operationId": "Payments_GetAllocatedAndAllocatablePaymentTransactions",
         "parameters": [
@@ -23650,6 +23606,7 @@
           },
           {
             "name": "paymentId",
+            "description": "The id of the payment whose allocations are included, if any.",
             "in": "path",
             "required": true,
             "schema": {
@@ -24203,7 +24160,7 @@
         "tags": [
           "Payments"
         ],
-        "summary": "Creates a new transaction link.",
+        "summary": "Creates a new payment transaction link.",
         "description": "Create a new transaction link.\n\n`POST /5af6572c-9771-4b86-995d-3374d3bc683c/payments/e6abf51e-2052-43c7-be02-4146cbfe9d00/transactionlinks`",
         "operationId": "Payments_CreatePaymentTransactionLink",
         "parameters": [
@@ -24848,7 +24805,7 @@
         "tags": [
           "Payment Terms"
         ],
-        "summary": "Updates an existing payment term.",
+        "summary": "Updates parts of an existing payment term.",
         "description": "Patch an existing payment term.\n\n`PATCH /5af6572c-9771-4b86-995d-3374d3bc683c/terms/ddca6e60-31ff-43a7-a152-1d08fba97332`",
         "operationId": "PaymentTerms_PatchPaymentTerm",
         "parameters": [
@@ -26073,6 +26030,7 @@
         "parameters": [
           {
             "name": "bookId",
+            "description": "The book's id.",
             "in": "path",
             "required": true,
             "schema": {
@@ -28829,7 +28787,7 @@
         },
         "responses": {
           "204": {
-            "description": ""
+            "description": "The purchase order email has been sent."
           },
           "400": {
             "description": "The purchase order could not be sent.",
@@ -30227,7 +30185,7 @@
         "tags": [
           "Receipts"
         ],
-        "summary": "Gets a list of transactions.",
+        "summary": "Gets the allocated and allocable transactions for a receipt.",
         "description": "Gets a list of transactions.\n            \n---\n\nGet a list of allocable transactions transactions for the specified book and entity\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/receipts/allocatableTransactions/entity/e6abf51e-2052-43c7-be02-4146cbfe9d00`\n            \n---\n            \nGet a list of allocated (full or partial) and allocable transactions for the specific book, entity, and linked receiptId. \n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/receipts/allocatableTransactions/entity/e6abf51e-2052-43c7-be02-4146cbfe9d00/158aac35-1009-4f4c-aed3-bc1a1544aef5`",
         "operationId": "Receipts_GetAllocatedAndAllocatablePaymentTransactions",
         "parameters": [
@@ -30811,7 +30769,7 @@
         "tags": [
           "Receipts"
         ],
-        "summary": "Creates a new transaction link.",
+        "summary": "Creates a new receipt transaction link.",
         "description": "Create a new transaction link.\n\n`POST /5af6572c-9771-4b86-995d-3374d3bc683c/receipts/e6abf51e-2052-43c7-be02-4146cbfe9d00/transactionlinks`",
         "operationId": "Receipts_CreateReceiptTransactionLink",
         "parameters": [
@@ -31821,6 +31779,7 @@
           },
           {
             "name": "transactionType",
+            "description": "The type of the recurring transaction.",
             "in": "query",
             "schema": {
               "$ref": "#/components/schemas/RecurringTransactionType"
@@ -32114,16 +32073,7 @@
             "in": "query",
             "description": "The report parameters.",
             "schema": {
-              "oneOf": [
-                {
-                  "nullable": true,
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/PayrollLeaveBalancesAndAccrualValueReportParameters"
-                    }
-                  ]
-                }
-              ]
+              "$ref": "#/components/schemas/PayrollLeaveBalancesAndAccrualValueReportParameters"
             },
             "x-position": 2
           },
@@ -32195,7 +32145,7 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Gets the payroll leave balances and accrual value report.",
+        "summary": "Gets the payroll leave balances and accrual value report using a request body.",
         "description": "Get the payroll leave balances and accrual value report.\n\nThis report is grouped by payroll leave item.\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/payrollLeaveBalancesAndAccrualValue`\n\n---\n\nGet the report as, for example, a PDF using a query string parameter.\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/payrollLeaveBalancesAndAccrualValue?format=PDF`\n\nThe following formats can be used:\n\n* `JSON`\n* `PDF`\n* `XLSX`\n* `RTF`\n* `CSV`\n* `HTML`\n\n---\n\nGet the report as, for example, a PDF using a header instead of the query string parameter: `Accept: application/pdf`\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/payrollLeaveBalancesAndAccrualValue`\n\nThe following `Accept` header values can be used:\n\n* `application/json`\n* `application/pdf`\n* `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`\n* `application/rtf`\n* `text/csv`\n* `text/html`",
         "operationId": "Reports_GetPayrollLeaveBalancesAndAccrualValueReportGET",
         "parameters": [
@@ -32215,16 +32165,7 @@
             "in": "query",
             "description": "The report parameters.",
             "schema": {
-              "oneOf": [
-                {
-                  "nullable": true,
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/PayrollLeaveBalancesAndAccrualValueReportParameters"
-                    }
-                  ]
-                }
-              ]
+              "$ref": "#/components/schemas/PayrollLeaveBalancesAndAccrualValueReportParameters"
             },
             "x-position": 2
           },
@@ -32318,16 +32259,7 @@
             "in": "query",
             "description": "The report parameters.",
             "schema": {
-              "oneOf": [
-                {
-                  "nullable": true,
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/PayrollDetailReportParameters"
-                    }
-                  ]
-                }
-              ]
+              "$ref": "#/components/schemas/PayrollDetailReportParameters"
             },
             "x-position": 2
           },
@@ -32399,7 +32331,7 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Gets the payroll detail report.",
+        "summary": "Gets the payroll detail report using a request body.",
         "description": "Get the payroll detail report.\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/payrollDetail`\n\n---\n\nGet the report as, for example, a PDF using a query string parameter.\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/payrollDetail?format=PDF`\n\nThe following formats can be used:\n\n* `JSON`\n* `PDF`\n* `XLSX`\n* `RTF`\n* `CSV`\n* `HTML`\n\n---\n\nGet the report as, for example, a PDF using a header instead of the query string parameter: `Accept: application/pdf`\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/payrollDetail`\n\nThe following `Accept` header values can be used:\n\n* `application/json`\n* `application/pdf`\n* `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`\n* `application/rtf`\n* `text/csv`\n* `text/html`",
         "operationId": "Reports_GetPayrollDetailReportGET",
         "parameters": [
@@ -32419,16 +32351,7 @@
             "in": "query",
             "description": "The report parameters.",
             "schema": {
-              "oneOf": [
-                {
-                  "nullable": true,
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/PayrollDetailReportParameters"
-                    }
-                  ]
-                }
-              ]
+              "$ref": "#/components/schemas/PayrollDetailReportParameters"
             },
             "x-position": 2
           },
@@ -32522,16 +32445,7 @@
             "in": "query",
             "description": "The report parameters.",
             "schema": {
-              "oneOf": [
-                {
-                  "nullable": true,
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/PayrollTransactionsSummaryReportParameters"
-                    }
-                  ]
-                }
-              ]
+              "$ref": "#/components/schemas/PayrollTransactionsSummaryReportParameters"
             },
             "x-position": 2
           },
@@ -32596,7 +32510,7 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Gets the payroll transactions summary report.",
+        "summary": "Gets the payroll transactions summary report using a request body.",
         "description": "Gets the payroll transactions summary report.\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/payrollTransactionsSummary`\n\n---\n\nGet the report as, for example, a PDF using a query string parameter.\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/payrollTransactionsSummary?format=PDF`\n\nThe following formats can be used:\n\n* `PDF`\n* `XLSX`\n* `RTF`\n* `CSV`\n* `HTML`\n            \n---\n\nGet the report as, for example, a PDF using a header instead of the query string parameter: `Accept: application/pdf`\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/payrollTransactionsSummary`\n\nThe following `Accept` header values can be used:\n\n* `application/pdf`\n* `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`\n* `application/rtf`\n* `text/csv`\n* `text/html`",
         "operationId": "Reports_GetPayrollTransactionsSummaryReportGET",
         "parameters": [
@@ -32616,16 +32530,7 @@
             "in": "query",
             "description": "The report parameters.",
             "schema": {
-              "oneOf": [
-                {
-                  "nullable": true,
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/PayrollTransactionsSummaryReportParameters"
-                    }
-                  ]
-                }
-              ]
+              "$ref": "#/components/schemas/PayrollTransactionsSummaryReportParameters"
             },
             "x-position": 2
           },
@@ -32712,16 +32617,7 @@
             "in": "query",
             "description": "The report parameters.",
             "schema": {
-              "oneOf": [
-                {
-                  "nullable": true,
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/SuperTransactionsReportParameters"
-                    }
-                  ]
-                }
-              ]
+              "$ref": "#/components/schemas/SuperTransactionsReportParameters"
             },
             "x-position": 2
           },
@@ -32786,7 +32682,7 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Gets the super transactions report.",
+        "summary": "Gets the super transactions report using a request body.",
         "description": "Get the super transactions report.\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/superTransactions`\n\n---\n\nGet the report as, for example, a PDF using a query string parameter.\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/superTransactions?format=PDF`\n\nThe following formats can be used:\n\n* `PDF`\n* `XLSX`\n* `RTF`\n* `CSV`\n* `HTML`\n\nJSON is not supported for this report at this time.\n            \n---\n\nGet the report as, for example, a PDF using a header instead of the query string parameter: `Accept: application/pdf`\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/supeTransactions`\n\nThe following `Accept` header values can be used:\n\n* `application/pdf`\n* `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`\n* `application/rtf`\n* `text/csv`\n* `text/html`",
         "operationId": "Reports_GetSuperTransactionsReportGET",
         "parameters": [
@@ -32806,16 +32702,7 @@
             "in": "query",
             "description": "The report parameters.",
             "schema": {
-              "oneOf": [
-                {
-                  "nullable": true,
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/SuperTransactionsReportParameters"
-                    }
-                  ]
-                }
-              ]
+              "$ref": "#/components/schemas/SuperTransactionsReportParameters"
             },
             "x-position": 2
           },
@@ -32902,16 +32789,7 @@
             "in": "query",
             "description": "The report parameters.",
             "schema": {
-              "oneOf": [
-                {
-                  "nullable": true,
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/TimesheetReportParameters"
-                    }
-                  ]
-                }
-              ]
+              "$ref": "#/components/schemas/TimesheetReportParameters"
             },
             "x-position": 2
           },
@@ -32976,7 +32854,7 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Gets the timesheet report.",
+        "summary": "Gets the timesheet report using a request body.",
         "description": "Get the timesheet report.\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/timeEntriesDetail`\n\n---\n\nGet the report as, for example, a PDF using a query string parameter.\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/timeEntriesDetail?format=PDF`\n\nThe following formats can be used:\n\n* `PDF`\n* `XLSX`\n* `RTF`\n* `CSV`\n* `HTML`\n\nJSON is not supported for this report at this time.\n            \n---\n\nGet the report as, for example, a PDF using a header instead of the query string parameter: `Accept: application/pdf`\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/timeEntriesDetail`\n\nThe following `Accept` header values can be used:\n\n* `application/pdf`\n* `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`\n* `application/rtf`\n* `text/csv`\n* `text/html`",
         "operationId": "Reports_GetTimesheetReportGET",
         "parameters": [
@@ -32996,16 +32874,7 @@
             "in": "query",
             "description": "The report parameters.",
             "schema": {
-              "oneOf": [
-                {
-                  "nullable": true,
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/TimesheetReportParameters"
-                    }
-                  ]
-                }
-              ]
+              "$ref": "#/components/schemas/TimesheetReportParameters"
             },
             "x-position": 2
           },
@@ -33092,16 +32961,7 @@
             "in": "query",
             "description": "The report parameters.",
             "schema": {
-              "oneOf": [
-                {
-                  "nullable": true,
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/SuperContributionsByEmployeeReportParameters"
-                    }
-                  ]
-                }
-              ]
+              "$ref": "#/components/schemas/SuperContributionsByEmployeeReportParameters"
             },
             "x-position": 2
           },
@@ -33166,7 +33026,7 @@
         "tags": [
           "Reports"
         ],
-        "summary": "Gets the super contributions by employee report.",
+        "summary": "Gets the super contributions by employee report using a request body.",
         "description": "Get the super contributions by employee report.\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/superContributionsbyEmployee`\n\n---\n\nGet the report as, for example, a PDF using a query string parameter.\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/superContributionsbyEmployee?format=PDF`\n\nThe following formats can be used:\n\n* `PDF`\n* `XLSX`\n* `RTF`\n* `CSV`\n* `HTML`\n\nJSON is not supported for this report at this time.\n            \n---\n\nGet the report as, for example, a PDF using a header instead of the query string parameter: `Accept: application/pdf`\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/reports/superContributionsbyEmployee`\n\nThe following `Accept` header values can be used:\n\n* `application/pdf`\n* `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`\n* `application/rtf`\n* `text/csv`\n* `text/html`",
         "operationId": "Reports_GetSuperContributionsByEmployeeReportGET",
         "parameters": [
@@ -33186,16 +33046,7 @@
             "in": "query",
             "description": "The report parameters.",
             "schema": {
-              "oneOf": [
-                {
-                  "nullable": true,
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/SuperContributionsByEmployeeReportParameters"
-                    }
-                  ]
-                }
-              ]
+              "$ref": "#/components/schemas/SuperContributionsByEmployeeReportParameters"
             },
             "x-position": 2
           },
@@ -39028,82 +38879,6 @@
             }
           }
         }
-      },
-      "get": {
-        "tags": [
-          "Superfund providers"
-        ],
-        "summary": "Searches for a list of super fund providers that contain the specified search text.",
-        "description": "Note that the search is not case sensitive.\n\nBy default, the first 5 results will be returned.\n\nThe following fields will be searched:\n\n- `name`\n- `abn`\n- `SuperfundProviderProduct.name`\n- `SuperfundProviderProduct.usi`\n- `SuperfundProviderProduct.spin`\n\n---\n\nSearch for a list of super fund providers for the specified book that contain the specified search text.\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/superfundProviders/search`\n\n---\n\nGet just the required fields, e.g. id and name. Find out more about [selecting](https://help.reckon.com/article/h9sxz6smwn-reckon-one-api-v2-selecting).\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/superfundProviders/search?select=id,name`\n\n---\n\nSort in the required order, e.g. by abn and then by name. Note that sorting is applied after the required number of providers has been retrieved. Find out more about [sorting](https://help.reckon.com/article/e0iok3ydto-reckon-one-api-v2-sorting).\n\n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/superfundProviders/search?orderby=abn,name desc`",
-        "operationId": "SuperfundProviders_SearchSuperfundProvidersGET",
-        "parameters": [
-          {
-            "name": "bookId",
-            "in": "path",
-            "required": true,
-            "description": "The book's id.",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "requestBody": {
-          "x-name": "criteria",
-          "description": "The search criteria, including the text to search for and the maximum number of providers to return.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SuperfundProviderSearch"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 2
-        },
-        "responses": {
-          "200": {
-            "description": "A paged list of super fund providers for the specified book.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuperfundProviders"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "The specified book does not exist.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseNotFound"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "The user does not have permission to retrieve the super fund providers.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseForbidden"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "The authentication token is missing, expired or invalid.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseUnauthorized"
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/{bookId}/superfundProviders/havingUsi/{usi}": {
@@ -39550,82 +39325,6 @@
         "summary": "Searches for a list of super fund products that contain the specified search text.",
         "description": "Note that the search is not case sensitive.\n            \nBy default, the first 5 results will be returned.\n            \nThe following fields will be searched:\n            \n- `name`\n- `usi`\n- `spin`\n            \n---\n            \nSearch for a list of super fund products for the specified book that contain the specified search text.\n            \n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/superfundProviders/products/search`\n            \n---\n            \nGet just the required fields, e.g. id and name. Find out more about [selecting](https://help.reckon.com/article/h9sxz6smwn-reckon-one-api-v2-selecting).\n            \n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/superfundProviders/products/search?select=id,name`\n            \n---\n            \nSort in the required order, e.g. by name. Note that sorting is applied after the required number of products has been retrieved. Find out more about [sorting](https://help.reckon.com/article/e0iok3ydto-reckon-one-api-v2-sorting).\n            \n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/superfundProviders/products/search?orderby=name`",
         "operationId": "SuperfundProviders_SearchSuperfundProductsPOST",
-        "parameters": [
-          {
-            "name": "bookId",
-            "in": "path",
-            "required": true,
-            "description": "The book's id.",
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "requestBody": {
-          "x-name": "criteria",
-          "description": "The search criteria, including the text to search for and the maximum number of products to return.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SuperfundSearch"
-              }
-            }
-          },
-          "required": true,
-          "x-position": 2
-        },
-        "responses": {
-          "200": {
-            "description": "A paged list of super fund products for the specified book.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuperfundProviderProducts"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "The specified book does not exist.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseNotFound"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "The user does not have permission to retrieve the super fund products.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseForbidden"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "The authentication token is missing, expired or invalid.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseUnauthorized"
-                }
-              }
-            }
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "Superfund providers"
-        ],
-        "summary": "Searches for a list of super fund products that contain the specified search text.",
-        "description": "Note that the search is not case sensitive.\n            \nBy default, the first 5 results will be returned.\n            \nThe following fields will be searched:\n            \n- `name`\n- `usi`\n- `spin`\n            \n---\n            \nSearch for a list of super fund products for the specified book that contain the specified search text.\n            \n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/superfundProviders/products/search`\n            \n---\n            \nGet just the required fields, e.g. id and name. Find out more about [selecting](https://help.reckon.com/article/h9sxz6smwn-reckon-one-api-v2-selecting).\n            \n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/superfundProviders/products/search?select=id,name`\n            \n---\n            \nSort in the required order, e.g. by name. Note that sorting is applied after the required number of products has been retrieved. Find out more about [sorting](https://help.reckon.com/article/e0iok3ydto-reckon-one-api-v2-sorting).\n            \n`GET /5af6572c-9771-4b86-995d-3374d3bc683c/superfundProviders/products/search?orderby=name`",
-        "operationId": "SuperfundProviders_SearchSuperfundProductsGET",
         "parameters": [
           {
             "name": "bookId",
@@ -43265,7 +42964,7 @@
         "tags": [
           "Superstreams"
         ],
-        "summary": "Deletes an existing line item.",
+        "summary": "Deletes an existing superstream line item.",
         "description": "Delete an existing line item.\n\n`DELETE /5af6572c-9771-4b86-995d-3374d3bc683c/superstreams/e6abf51e-2052-43c7-be02-4146cbfe9d00/lineitems/907f8858-91c5-47f7-ba92-42d4b4b27973`",
         "operationId": "Superstreams_DeleteLineItem",
         "parameters": [
@@ -44638,7 +44337,7 @@
         "tags": [
           "Supplier credit notes"
         ],
-        "summary": "Creates a new transaction link.",
+        "summary": "Creates a new supplier credit note transaction link.",
         "description": "Create a new transaction link.\n\n`POST /5af6572c-9771-4b86-995d-3374d3bc683c/suppliercreditnotes/e6abf51e-2052-43c7-be02-4146cbfe9d00/transactionlinks`",
         "operationId": "SupplierCreditNotes_CreateSupplierCreditNoteTransactionLink",
         "parameters": [
@@ -51521,6 +51220,23 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "oauth2": {
+        "type": "oauth2",
+        "description": "OAuth 2.0 authorization code flow using the Reckon identity server.",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://identity.reckon.com/connect/authorize",
+            "tokenUrl": "https://identity.reckon.com/connect/token",
+            "refreshUrl": "https://identity.reckon.com/connect/token",
+            "scopes": {
+              "read": "Read access to Reckon One data",
+              "write": "Write access to Reckon One data"
+            }
+          }
+        }
+      }
+    },
     "schemas": {
       "AddressTypes": {
         "type": "object",
@@ -51771,7 +51487,6 @@
           "description": {
             "type": "string",
             "description": "The type's description.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true
           },
@@ -51904,6 +51619,7 @@
             "nullable": true
           },
           "isOpenBanking": {
+            "description": "Whether the financial institution connects through open banking.",
             "type": "boolean"
           },
           "yodleeId": {
@@ -51913,6 +51629,7 @@
             "nullable": true
           },
           "isYodlee": {
+            "description": "Whether the financial institution's bank feed is provided by Yodlee.",
             "type": "boolean"
           },
           "directId": {
@@ -51922,6 +51639,7 @@
             "nullable": true
           },
           "isDirect": {
+            "description": "Whether the financial institution provides a direct bank feed.",
             "type": "boolean"
           },
           "recommendedOption": {
@@ -53593,7 +53311,6 @@
             "type": "string",
             "description": "The date bill is due by.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-03-06"
           },
@@ -53601,7 +53318,6 @@
             "type": "number",
             "description": "The bill discount amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
@@ -53609,7 +53325,6 @@
             "type": "number",
             "description": "The bill discount percentage.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 7.5
           },
@@ -53625,28 +53340,24 @@
           "reference": {
             "type": "string",
             "description": "The bill reference.",
-            "default": "null",
             "nullable": true,
             "example": "My reference"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
           "template": {
             "type": "string",
             "description": "The template used to print or email the bill.",
-            "default": "The default bill template",
             "nullable": true,
             "example": "Professional bill"
           },
           "notes": {
             "type": "string",
             "description": "Notes related to the bill.",
-            "default": "null",
             "nullable": true,
             "example": "This is a note."
           },
@@ -53676,13 +53387,11 @@
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Project A:Project B:Project C"
           },
           "itemDetails": {
             "description": "Details of an item used on an bill line item.\nThis must be omitted if `accountDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -53692,7 +53401,6 @@
           },
           "accountDetails": {
             "description": "Details of an account used on an bill line item.\nThis must be omitted if `itemDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -53703,14 +53411,12 @@
           "description": {
             "type": "string",
             "description": "The description of the line.",
-            "default": "null",
             "nullable": true,
             "example": "This is my new line"
           },
           "taxRate": {
             "type": "string",
             "description": "The tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           },
@@ -53718,21 +53424,18 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
           "transactionLinks": {
             "type": "array",
             "description": "Details of transactions (e.g. the purchase order line item) that are linked to the bill line item.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/BillLineItemTransactionLink"
@@ -53758,7 +53461,6 @@
             "type": "number",
             "description": "The price of each item including or excluding tax (depending on the `amountTaxStatus`).",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 5.5
           },
@@ -53766,7 +53468,6 @@
             "type": "number",
             "description": "The quantity purchased.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 1
           },
@@ -53774,7 +53475,6 @@
             "type": "number",
             "description": "The total discount for the line item.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
@@ -53782,7 +53482,6 @@
             "type": "number",
             "description": "The discount percentage for the line item.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 25
           }
@@ -53806,7 +53505,6 @@
             "type": "number",
             "description": "The quantity purchased.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 1
           },
@@ -53869,7 +53567,6 @@
             "type": "string",
             "description": "The date bill is due by.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-03-06"
           },
@@ -53877,7 +53574,6 @@
             "type": "number",
             "description": "The bill discount amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
@@ -53885,7 +53581,6 @@
             "type": "number",
             "description": "The bill discount percentage.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 7.5
           },
@@ -53901,28 +53596,24 @@
           "reference": {
             "type": "string",
             "description": "The bill reference.",
-            "default": "null",
             "nullable": true,
             "example": "My reference"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
           "template": {
             "type": "string",
             "description": "The template used to print or email the bill.",
-            "default": "The default bill template",
             "nullable": true,
             "example": "Professional bill"
           },
           "notes": {
             "type": "string",
             "description": "Notes related to the bill.",
-            "default": "null",
             "nullable": true,
             "example": "This is a note."
           },
@@ -53953,13 +53644,11 @@
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Project A:Project B:Project C"
           },
           "itemDetails": {
             "description": "Details of an item used on an bill line item.\nThis must be omitted if `accountDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -53969,7 +53658,6 @@
           },
           "accountDetails": {
             "description": "Details of an account used on an bill line item.\nThis must be omitted if `itemDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -53980,14 +53668,12 @@
           "description": {
             "type": "string",
             "description": "The description of the line.",
-            "default": "null",
             "nullable": true,
             "example": "This is my new line"
           },
           "taxRate": {
             "type": "string",
             "description": "The tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           },
@@ -53995,21 +53681,18 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
           "transactionLinks": {
             "type": "array",
             "description": "Details of transactions (e.g. the purchase order line item) that are linked to the bill line item.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/BillLineItemTransactionLink"
@@ -54267,7 +53950,6 @@
           "documentNumber": {
             "type": "string",
             "description": "The number of the document that the email relates to.",
-            "default": "null",
             "nullable": true,
             "example": "DOC1234"
           }
@@ -54702,7 +54384,6 @@
           "description": {
             "type": "string",
             "description": "The classification's description.",
-            "default": "null",
             "maxLength": 500,
             "nullable": true,
             "example": "Small business sales classification."
@@ -54728,7 +54409,6 @@
           "parentClassification": {
             "type": "string",
             "description": "The parent classification if there is one.",
-            "default": "null",
             "nullable": true,
             "example": "Parent classification name"
           }
@@ -55050,7 +54730,6 @@
           "salutation": {
             "type": "string",
             "description": "The salutation to use in communications.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "Hello"
@@ -55058,7 +54737,6 @@
           "department": {
             "type": "string",
             "description": "The contact's department.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "Accounts receivable"
@@ -55066,7 +54744,6 @@
           "position": {
             "type": "string",
             "description": "The contact's position.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "Credit controller"
@@ -55085,7 +54762,6 @@
           "notes": {
             "type": "string",
             "description": "Notes for the contact.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "The person to call."
@@ -55093,7 +54769,6 @@
           "addresses": {
             "type": "array",
             "description": "List of addresses.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/AddressInput"
@@ -55102,7 +54777,6 @@
           "phoneNumbers": {
             "type": "array",
             "description": "List of phone numbers.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/PhoneNumberInput"
@@ -55111,7 +54785,6 @@
           "electronicAddresses": {
             "type": "array",
             "description": "List of electronic addresses.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ElectronicAddressInput"
@@ -55136,7 +54809,6 @@
           "line1": {
             "type": "string",
             "description": "Line 1 of the address.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "Level 2"
@@ -55144,7 +54816,6 @@
           "line2": {
             "type": "string",
             "description": "Line 2 of the address.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "100 Pacific Highway"
@@ -55152,7 +54823,6 @@
           "line3": {
             "type": "string",
             "description": "Line 3 of the address.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "Line 3"
@@ -55160,7 +54830,6 @@
           "suburb": {
             "type": "string",
             "description": "The suburb.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "North Sydney"
@@ -55168,7 +54837,6 @@
           "town": {
             "type": "string",
             "description": "The town.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "Sydney"
@@ -55176,7 +54844,6 @@
           "state": {
             "type": "string",
             "description": "The state.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "NSW"
@@ -55184,7 +54851,6 @@
           "postcode": {
             "type": "string",
             "description": "The post code.",
-            "default": "null",
             "maxLength": 30,
             "nullable": true,
             "example": "2060"
@@ -55192,7 +54858,6 @@
           "country": {
             "type": "string",
             "description": "The country.",
-            "default": "null",
             "maxLength": 30,
             "nullable": true,
             "example": "Australia"
@@ -55216,7 +54881,6 @@
           "countryCode": {
             "type": "string",
             "description": "The country code.",
-            "default": "null",
             "maxLength": 10,
             "nullable": true,
             "example": "61"
@@ -55224,7 +54888,6 @@
           "areaCode": {
             "type": "string",
             "description": "The area code.",
-            "default": "null",
             "maxLength": 10,
             "nullable": true,
             "example": "02"
@@ -55232,7 +54895,6 @@
           "number": {
             "type": "string",
             "description": "The number.",
-            "default": "null",
             "maxLength": 30,
             "nullable": true,
             "example": "90101234"
@@ -55240,7 +54902,6 @@
           "extension": {
             "type": "string",
             "description": "The extension.",
-            "default": "null",
             "maxLength": 10,
             "nullable": true,
             "example": "4321"
@@ -55270,7 +54931,6 @@
           "address": {
             "type": "string",
             "description": "The electronic address.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "x@y.com"
@@ -55446,7 +55106,6 @@
           "countryCode": {
             "type": "string",
             "description": "The country code.",
-            "default": "null",
             "maxLength": 10,
             "nullable": true,
             "example": "61"
@@ -55454,7 +55113,6 @@
           "areaCode": {
             "type": "string",
             "description": "The area code.",
-            "default": "null",
             "maxLength": 10,
             "nullable": true,
             "example": "02"
@@ -55462,7 +55120,6 @@
           "number": {
             "type": "string",
             "description": "The number.",
-            "default": "null",
             "maxLength": 30,
             "nullable": true,
             "example": "90101234"
@@ -55470,7 +55127,6 @@
           "extension": {
             "type": "string",
             "description": "The extension.",
-            "default": "null",
             "maxLength": 10,
             "nullable": true,
             "example": "4321"
@@ -55535,7 +55191,6 @@
           "line1": {
             "type": "string",
             "description": "Line 1 of the address.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "Level 2"
@@ -55543,7 +55198,6 @@
           "line2": {
             "type": "string",
             "description": "Line 2 of the address.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "100 Pacific Highway"
@@ -55551,7 +55205,6 @@
           "line3": {
             "type": "string",
             "description": "Line 3 of the address.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "Line 3"
@@ -55559,7 +55212,6 @@
           "suburb": {
             "type": "string",
             "description": "The suburb.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "North Sydney"
@@ -55567,7 +55219,6 @@
           "town": {
             "type": "string",
             "description": "The town.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "Sydney"
@@ -55575,7 +55226,6 @@
           "state": {
             "type": "string",
             "description": "The state.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "NSW"
@@ -55583,7 +55233,6 @@
           "postcode": {
             "type": "string",
             "description": "The post code.",
-            "default": "null",
             "maxLength": 30,
             "nullable": true,
             "example": "2060"
@@ -55591,7 +55240,6 @@
           "country": {
             "type": "string",
             "description": "The country.",
-            "default": "null",
             "maxLength": 30,
             "nullable": true,
             "example": "Australia"
@@ -55606,7 +55254,6 @@
           "line1": {
             "type": "string",
             "description": "Line 1 of the address.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "Level 2"
@@ -55614,7 +55261,6 @@
           "line2": {
             "type": "string",
             "description": "Line 2 of the address.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "100 Pacific Highway"
@@ -55622,7 +55268,6 @@
           "line3": {
             "type": "string",
             "description": "Line 3 of the address.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "Line 3"
@@ -55630,7 +55275,6 @@
           "suburb": {
             "type": "string",
             "description": "The suburb.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "North Sydney"
@@ -55638,7 +55282,6 @@
           "town": {
             "type": "string",
             "description": "The town.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "Sydney"
@@ -55646,7 +55289,6 @@
           "state": {
             "type": "string",
             "description": "The state.",
-            "default": "null",
             "maxLength": 80,
             "nullable": true,
             "example": "NSW"
@@ -55654,7 +55296,6 @@
           "postcode": {
             "type": "string",
             "description": "The post code.",
-            "default": "null",
             "maxLength": 30,
             "nullable": true,
             "example": "2060"
@@ -55662,7 +55303,6 @@
           "country": {
             "type": "string",
             "description": "The country.",
-            "default": "null",
             "maxLength": 30,
             "nullable": true,
             "example": "Australia"
@@ -56162,7 +55802,6 @@
           "reference": {
             "type": "string",
             "description": "The credit note reference.",
-            "default": "null",
             "nullable": true,
             "example": "My reference"
           },
@@ -56170,28 +55809,24 @@
             "type": "string",
             "readOnly": true,
             "description": "The accounts receivable ledger account.\n_Note:_ It is not currently possible to create multiple Accounts Receivable accounts so this field is read-only and will be ignored.",
-            "default": "The default Accounts Receivable account",
             "nullable": true,
             "example": "Accounts Receivable"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
           "template": {
             "type": "string",
             "description": "The template used to print or email the credit note.",
-            "default": "The default credit note template",
             "nullable": true,
             "example": "Professional Customer Adjustment Note"
           },
           "notes": {
             "type": "string",
             "description": "Notes related to the credit note.",
-            "default": "null",
             "nullable": true,
             "example": "This is a note."
           },
@@ -56227,13 +55862,11 @@
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Project A:Project B:Project C"
           },
           "itemDetails": {
             "description": "Details of an item used on an invoice line item.\nThis must be omitted if `accountDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -56243,7 +55876,6 @@
           },
           "accountDetails": {
             "description": "Details of an account used on an invoice line item.\nThis must be omitted if `itemDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -56254,7 +55886,6 @@
           "description": {
             "type": "string",
             "description": "The description of the line.",
-            "default": "null",
             "nullable": true,
             "example": "This is my new line"
           },
@@ -56262,14 +55893,12 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "taxRate": {
             "type": "string",
             "description": "The tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           },
@@ -56277,14 +55906,12 @@
             "type": "boolean",
             "readOnly": true,
             "description": "Whether the tax amount has been modified.",
-            "default": "null",
             "nullable": true,
             "example": false
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           }
@@ -56308,7 +55935,6 @@
             "type": "number",
             "description": "The price of each item including or excluding tax (depending on the `amountTaxStatus`).",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 5.5
           },
@@ -56316,7 +55942,6 @@
             "type": "number",
             "description": "The quantity purchased.",
             "format": "decimal",
-            "default": "nulll",
             "nullable": true,
             "example": 1
           }
@@ -56340,7 +55965,6 @@
             "type": "number",
             "description": "The quantity purchased.",
             "format": "decimal",
-            "default": "nulll",
             "nullable": true,
             "example": 1
           },
@@ -56400,7 +56024,6 @@
           "reference": {
             "type": "string",
             "description": "The credit note reference.",
-            "default": "null",
             "nullable": true,
             "example": "My reference"
           },
@@ -56408,28 +56031,24 @@
             "type": "string",
             "readOnly": true,
             "description": "The accounts receivable ledger account.\n_Note:_ It is not currently possible to create multiple Accounts Receivable accounts so this field is read-only and will be ignored.",
-            "default": "The default Accounts Receivable account",
             "nullable": true,
             "example": "Accounts Receivable"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
           "template": {
             "type": "string",
             "description": "The template used to print or email the credit note.",
-            "default": "null",
             "minLength": 1,
             "example": "Professional Customer Adjustment Note"
           },
           "notes": {
             "type": "string",
             "description": "Notes related to the credit note.",
-            "default": "null",
             "nullable": true,
             "example": "This is a note."
           },
@@ -56460,13 +56079,11 @@
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Project A:Project B:Project C"
           },
           "itemDetails": {
             "description": "Details of an item used on an invoice line item.\nThis must be omitted if `accountDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -56476,7 +56093,6 @@
           },
           "accountDetails": {
             "description": "Details of an account used on an invoice line item.\nThis must be omitted if `itemDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -56487,7 +56103,6 @@
           "description": {
             "type": "string",
             "description": "The description of the line.",
-            "default": "null",
             "nullable": true,
             "example": "This is my new line"
           },
@@ -56495,14 +56110,12 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "taxRate": {
             "type": "string",
             "description": "The tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           },
@@ -56510,14 +56123,12 @@
             "type": "boolean",
             "readOnly": true,
             "description": "Whether the tax amount has been modified.",
-            "default": "null",
             "nullable": true,
             "example": false
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -57111,7 +56722,6 @@
           "organisationName": {
             "type": "string",
             "description": "The organisation's name.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "Reckon Co."
@@ -57119,7 +56729,6 @@
           "branch": {
             "type": "string",
             "description": "The organisation's branch.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "1234"
@@ -57127,7 +56736,6 @@
           "notes": {
             "type": "string",
             "description": "Notes for the organisation.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "The person to call."
@@ -57135,7 +56743,6 @@
           "businessNumber1": {
             "type": "string",
             "description": "The organisation's business number 1.",
-            "default": "null",
             "maxLength": 20,
             "nullable": true,
             "example": "0218001234"
@@ -57143,7 +56750,6 @@
           "businessNumber2": {
             "type": "string",
             "description": "The organisation's business number 2.",
-            "default": "null",
             "maxLength": 20,
             "nullable": true,
             "example": "0218001234"
@@ -57151,7 +56757,6 @@
           "businessNumber": {
             "type": "string",
             "description": "This applies to NZBN number.",
-            "default": "null",
             "maxLength": 20,
             "nullable": true,
             "example": "0218001234123"
@@ -57170,7 +56775,6 @@
           "addresses": {
             "type": "array",
             "description": "List of addresses.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/AddressInput"
@@ -57179,7 +56783,6 @@
           "phoneNumbers": {
             "type": "array",
             "description": "List of phone numbers.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/PhoneNumberInput"
@@ -57188,7 +56791,6 @@
           "electronicAddresses": {
             "type": "array",
             "description": "List of electronic addresses.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ElectronicAddressInput"
@@ -57196,7 +56798,6 @@
           },
           "entityTypes": {
             "description": "The organisation's entity types.",
-            "default": "null",
             "nullable": true,
             "example": {
               "IsCustomer": false,
@@ -57214,20 +56815,17 @@
             "type": "number",
             "description": "The customer's credit limit.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 12.5
           },
           "paymentTerms": {
             "type": "string",
             "description": "The customer's payment term id.",
-            "default": "null",
             "nullable": true,
             "example": "4cafd978-14ae-4dbe-8774-e86c29fabdc4"
           },
           "transactionPassword": {
             "description": "The customer's transaction password details",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -57238,7 +56836,6 @@
           "customFields": {
             "type": "array",
             "description": "List of custom fields.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/OrganisationCustomFieldValueInput"
@@ -57290,7 +56887,6 @@
           "value": {
             "type": "string",
             "description": "The custom field value.",
-            "default": "null",
             "nullable": true,
             "example": "x@y.com"
           }
@@ -57469,7 +57065,6 @@
           "salutation": {
             "type": "string",
             "description": "The salutation to use in communications.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "Hello"
@@ -57477,7 +57072,6 @@
           "department": {
             "type": "string",
             "description": "The contact's department.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "Accounts receivable"
@@ -57485,7 +57079,6 @@
           "position": {
             "type": "string",
             "description": "The contact's position.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "Credit controller"
@@ -57504,7 +57097,6 @@
           "notes": {
             "type": "string",
             "description": "Notes for the contact.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "The person to call."
@@ -57512,7 +57104,6 @@
           "addresses": {
             "type": "array",
             "description": "List of addresses.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/AddressInput"
@@ -57521,7 +57112,6 @@
           "phoneNumbers": {
             "type": "array",
             "description": "List of phone numbers.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/PhoneNumberInput"
@@ -57530,7 +57120,6 @@
           "electronicAddresses": {
             "type": "array",
             "description": "List of electronic addresses.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ElectronicAddressInput"
@@ -57546,7 +57135,6 @@
           "value": {
             "type": "string",
             "description": "Gets or sets the value to assign to the custom field.",
-            "default": "null",
             "nullable": true,
             "example": "x@y.com"
           }
@@ -57908,7 +57496,6 @@
           "code": {
             "type": "string",
             "description": "The department's unique code.",
-            "default": "null",
             "maxLength": 50,
             "nullable": true,
             "example": "1234"
@@ -57925,7 +57512,6 @@
           "notes": {
             "type": "string",
             "description": "Notes about the department.",
-            "default": "null",
             "maxLength": 500,
             "nullable": true,
             "example": "This is the finance department."
@@ -57933,7 +57519,6 @@
           "managers": {
             "type": "array",
             "description": "A list of managers assigned to the department.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/DepartmentManagerInput"
@@ -57942,7 +57527,6 @@
           "employees": {
             "type": "array",
             "description": "A list of employees assigned to the department.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/DepartmentEmployeeInput"
@@ -58106,7 +57690,6 @@
           "description": {
             "type": "string",
             "description": "The type's description.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true
           },
@@ -59564,7 +59147,6 @@
             "type": "string",
             "description": "The date the estimate expires on.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-03-06"
           },
@@ -59587,7 +59169,6 @@
           "classification": {
             "type": "string",
             "description": "The id or name of the classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -59600,7 +59181,6 @@
           "notes": {
             "type": "string",
             "description": "Notes related to the estimate.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "This is a note."
@@ -59608,7 +59188,6 @@
           "termsAndConditions": {
             "type": "string",
             "description": "Terms and conditions.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "These are the terms and conditions."
@@ -59616,7 +59195,6 @@
           "paymentNotes": {
             "type": "string",
             "description": "Payment notes.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "This is how you pay us."
@@ -59654,7 +59232,6 @@
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.",
-            "default": "null",
             "nullable": true,
             "example": "Project A:Project B"
           },
@@ -59670,7 +59247,6 @@
             "type": "number",
             "description": "The value of any markup as an amount. MarkupAmount and MarkupPercent are mutually exclusive.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 5
           },
@@ -59678,14 +59254,12 @@
             "type": "number",
             "description": "The value of any markup as a percentage. MarkupAmount and MarkupPercent are mutually exclusive.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 15.5
           },
           "taxRate": {
             "type": "string",
             "description": "The id or name of the applicate tax.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           },
@@ -59693,14 +59267,12 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           }
@@ -59769,7 +59341,6 @@
             "type": "string",
             "description": "The date the estimate expires on.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-03-06"
           },
@@ -59792,7 +59363,6 @@
           "classification": {
             "type": "string",
             "description": "The id or name of the classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -59805,7 +59375,6 @@
           "notes": {
             "type": "string",
             "description": "Notes related to the estimate.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "This is a note."
@@ -59813,7 +59382,6 @@
           "termsAndConditions": {
             "type": "string",
             "description": "Terms and conditions.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "These are the terms and conditions."
@@ -59821,7 +59389,6 @@
           "paymentNotes": {
             "type": "string",
             "description": "Payment notes.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "This is how you pay us."
@@ -59853,7 +59420,6 @@
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.",
-            "default": "null",
             "nullable": true,
             "example": "Project A:Project B"
           },
@@ -59869,7 +59435,6 @@
             "type": "number",
             "description": "The value of any markup as an amount. MarkupAmount and MarkupPercent are mutually exclusive.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 5
           },
@@ -59877,14 +59442,12 @@
             "type": "number",
             "description": "The value of any markup as a percentage. MarkupAmount and MarkupPercent are mutually exclusive.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 15.5
           },
           "taxRate": {
             "type": "string",
             "description": "The id or name of the applicate tax.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           },
@@ -59892,14 +59455,12 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -59907,7 +59468,6 @@
             "type": "string",
             "description": "lineId of the line item",
             "format": "guid",
-            "default": "null",
             "nullable": true
           }
         }
@@ -60446,21 +60006,18 @@
           "reference": {
             "type": "string",
             "description": "The reference entered by the employee.",
-            "default": "null",
             "nullable": true,
             "example": "My reference"
           },
           "project": {
             "type": "string",
             "description": "The project that the expense claim relates to.",
-            "default": "null",
             "nullable": true,
             "example": "Project A"
           },
           "customer": {
             "type": "string",
             "description": "The customer that the expense claim relates to.",
-            "default": "null",
             "nullable": true,
             "example": "Customer A"
           },
@@ -60493,7 +60050,6 @@
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -60532,21 +60088,18 @@
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "The project from the expense claim header",
             "nullable": true,
             "example": "Project A:Project B:Project C"
           },
           "supplier": {
             "type": "string",
             "description": "The supplier that the line item relates to.",
-            "default": "null",
             "nullable": true,
             "example": "Supplier A"
           },
           "customer": {
             "type": "string",
             "description": "The customer that the line item relates to.",
-            "default": "The customer from the expense claim header",
             "nullable": true,
             "example": "Customer B"
           },
@@ -60570,7 +60123,6 @@
           },
           "itemDetails": {
             "description": "Details of an item used on an expense claim line item.\nThis must be omitted if `accountDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -60580,7 +60132,6 @@
           },
           "accountDetails": {
             "description": "Details of an account used on an expense claim line item.\nThis must be omitted if `itemDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -60591,7 +60142,6 @@
           "description": {
             "type": "string",
             "description": "The description of the expense.",
-            "default": "null",
             "nullable": true,
             "example": "This is my new line"
           },
@@ -60599,14 +60149,12 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "taxRate": {
             "type": "string",
             "description": "The tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "NCG"
           },
@@ -60620,14 +60168,12 @@
           "notes": {
             "type": "string",
             "description": "Notes relating to the expense.",
-            "default": "null",
             "nullable": true,
             "example": "Notes about this line."
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           }
@@ -60651,7 +60197,6 @@
             "type": "number",
             "description": "The price of each item.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 5.5
           },
@@ -60659,7 +60204,6 @@
             "type": "number",
             "description": "The quantity sold.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 1
           }
@@ -60683,7 +60227,6 @@
             "type": "number",
             "description": "The quantity purchased.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 1
           },
@@ -60691,7 +60234,6 @@
             "type": "number",
             "description": "The amount including or excluding tax (depending on the expense claim's `amountTaxStatus`).",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 110
           }
@@ -60723,21 +60265,18 @@
           "reference": {
             "type": "string",
             "description": "The reference entered by the employee.",
-            "default": "null",
             "nullable": true,
             "example": "My reference"
           },
           "project": {
             "type": "string",
             "description": "The project that the expense claim relates to.",
-            "default": "null",
             "nullable": true,
             "example": "Project A"
           },
           "customer": {
             "type": "string",
             "description": "The customer that the expense claim relates to.",
-            "default": "null",
             "nullable": true,
             "example": "Customer A"
           },
@@ -60770,7 +60309,6 @@
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -60809,21 +60347,18 @@
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "The project from the expense claim header",
             "nullable": true,
             "example": "Project A:Project B:Project C"
           },
           "supplier": {
             "type": "string",
             "description": "The supplier that the line item relates to.",
-            "default": "null",
             "nullable": true,
             "example": "Supplier A"
           },
           "customer": {
             "type": "string",
             "description": "The customer that the line item relates to.",
-            "default": "The customer from the expense claim header",
             "nullable": true,
             "example": "Customer B"
           },
@@ -60847,7 +60382,6 @@
           },
           "itemDetails": {
             "description": "Details of an item used on an expense claim line item.\nThis must be omitted if `accountDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -60857,7 +60391,6 @@
           },
           "accountDetails": {
             "description": "Details of an account used on an expense claim line item.\nThis must be omitted if `itemDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -60868,7 +60401,6 @@
           "description": {
             "type": "string",
             "description": "The description of the expense.",
-            "default": "null",
             "nullable": true,
             "example": "This is my new line"
           },
@@ -60876,14 +60408,12 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "taxRate": {
             "type": "string",
             "description": "The tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "NCG"
           },
@@ -60897,14 +60427,12 @@
           "notes": {
             "type": "string",
             "description": "Notes relating to the expense.",
-            "default": "null",
             "nullable": true,
             "example": "Notes about this line."
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -60912,7 +60440,6 @@
             "type": "string",
             "description": "lineId of the line item",
             "format": "guid",
-            "default": "null",
             "nullable": true
           }
         }
@@ -61659,7 +61186,6 @@
             "type": "string",
             "description": "The date payment is due by.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-03-06"
           },
@@ -61667,7 +61193,6 @@
             "type": "number",
             "description": "The invoice discount amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
@@ -61675,7 +61200,6 @@
             "type": "number",
             "description": "The invoice discount percentage.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 7.5
           },
@@ -61691,21 +61215,18 @@
           "paymentTerms": {
             "type": "string",
             "description": "Payment terms.",
-            "default": "The customer's default payment terms",
             "nullable": true,
             "example": "30 days net"
           },
           "reference": {
             "type": "string",
             "description": "The invoice reference.",
-            "default": "null",
             "nullable": true,
             "example": "My reference"
           },
           "purchaseOrderNumber": {
             "type": "string",
             "description": "The purchase order number.",
-            "default": "null",
             "maxLength": 30,
             "nullable": true,
             "example": "ABC123"
@@ -61714,21 +61235,18 @@
             "type": "string",
             "readOnly": true,
             "description": "The accounts receivable ledger account.\n_Note:_ It is not currently possible to create multiple Accounts Receivable accounts so this field is read-only and will be ignored.",
-            "default": "The default Accounts Receivable account",
             "nullable": true,
             "example": "Accounts Receivable"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
           "template": {
             "type": "string",
             "description": "The template used to print or email the invoice.",
-            "default": "The default invoice template",
             "nullable": true,
             "example": "Professional invoice"
           },
@@ -61741,21 +61259,18 @@
           "notes": {
             "type": "string",
             "description": "Notes related to the invoice.",
-            "default": "null",
             "nullable": true,
             "example": "This is a note."
           },
           "paymentDetails": {
             "type": "string",
             "description": "Details of how to pay the invoice.",
-            "default": "null",
             "nullable": true,
             "example": "BSB 134-456, Account 987654"
           },
           "customFields": {
             "type": "array",
             "description": "List of custom fields.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/SalesTransactionCustomFieldValueInput"
@@ -61764,14 +61279,12 @@
           "invoiceNumber": {
             "type": "string",
             "description": "A user defined invoice number.\nIf not provided, the next available invoice number will be used.",
-            "default": "null",
             "nullable": true,
             "example": "INV0001"
           },
           "transactionLinks": {
             "type": "array",
             "description": "The transaction links for the invoice.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/InvoiceHeaderTransactionLink"
@@ -61803,7 +61316,6 @@
           "value": {
             "type": "string",
             "description": "The custom field value.",
-            "default": "null",
             "nullable": true,
             "example": "x@y.com"
           }
@@ -61849,20 +61361,17 @@
             "type": "string",
             "description": "The date when the service was provided.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-01-01"
           },
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Project A:Project B:Project C"
           },
           "itemDetails": {
             "description": "Details of an item used on an invoice line item.\nThis must be omitted if `accountDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -61872,7 +61381,6 @@
           },
           "accountDetails": {
             "description": "Details of an account used on an invoice line item.\nThis must be omitted if `itemDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -61883,7 +61391,6 @@
           "description": {
             "type": "string",
             "description": "The description of the line.",
-            "default": "null",
             "nullable": true,
             "example": "This is my new line"
           },
@@ -61891,14 +61398,12 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "taxRate": {
             "type": "string",
             "description": "The tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           },
@@ -61906,26 +61411,22 @@
             "type": "boolean",
             "readOnly": true,
             "description": "Whether the tax amount has been modified.",
-            "default": "null",
             "nullable": true,
             "example": false
           },
           "isFullWidthDescription": {
             "type": "boolean",
             "description": "Whether the line item is a full width description only item.",
-            "default": "null",
             "nullable": true,
             "example": false
           },
           "parentLineId": {
             "type": "string",
             "description": "Parent id of line item if RowType is set to Data",
-            "default": "null",
             "nullable": true
           },
           "rowType": {
             "description": "Row type of line item.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -61945,7 +61446,6 @@
           "transactionLinks": {
             "type": "array",
             "description": "Details of transactions that are linked to the invoice.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/InvoiceLineItemTransactionLink"
@@ -61954,7 +61454,6 @@
           "classification": {
             "type": "string",
             "description": "The id or full name of the classification that the line item relates to.\nNote that the full name includes the name(s) of any parent classification(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Classification A:Classification B"
           }
@@ -61978,7 +61477,6 @@
             "type": "number",
             "description": "The price of each item including or excluding tax (depending on the `amountTaxStatus`).",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 5.5
           },
@@ -61986,7 +61484,6 @@
             "type": "number",
             "description": "The quantity purchased.",
             "format": "decimal",
-            "default": "nulll",
             "nullable": true,
             "example": 1
           },
@@ -61994,7 +61491,6 @@
             "type": "number",
             "description": "The total discount for the line item.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
@@ -62002,7 +61498,6 @@
             "type": "number",
             "description": "The discount percentage for the line item.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 25
           },
@@ -62033,7 +61528,6 @@
             "type": "number",
             "description": "The quantity purchased.",
             "format": "decimal",
-            "default": "nulll",
             "nullable": true,
             "example": 1
           },
@@ -62053,10 +61547,12 @@
         "additionalProperties": false,
         "properties": {
           "printAsSingleLine": {
+            "description": "Whether the line item group is printed as a single line.",
             "type": "boolean",
             "nullable": true
           },
           "key": {
+            "description": "The key that identifies the line item group.",
             "type": "string",
             "nullable": true
           }
@@ -62150,7 +61646,6 @@
             "type": "string",
             "description": "The date payment is due by.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-03-06"
           },
@@ -62158,7 +61653,6 @@
             "type": "number",
             "description": "The invoice discount amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
@@ -62166,7 +61660,6 @@
             "type": "number",
             "description": "The invoice discount percentage.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 7.5
           },
@@ -62182,21 +61675,18 @@
           "paymentTerms": {
             "type": "string",
             "description": "Payment terms.",
-            "default": "The customer's default payment terms",
             "nullable": true,
             "example": "30 days net"
           },
           "reference": {
             "type": "string",
             "description": "The invoice reference.",
-            "default": "null",
             "nullable": true,
             "example": "My reference"
           },
           "purchaseOrderNumber": {
             "type": "string",
             "description": "The purchase order number.",
-            "default": "null",
             "maxLength": 30,
             "nullable": true,
             "example": "ABC123"
@@ -62205,21 +61695,18 @@
             "type": "string",
             "readOnly": true,
             "description": "The accounts receivable ledger account.\n_Note:_ It is not currently possible to create multiple Accounts Receivable accounts so this field is read-only and will be ignored.",
-            "default": "The default Accounts Receivable account",
             "nullable": true,
             "example": "Accounts Receivable"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
           "template": {
             "type": "string",
             "description": "The template used to print or email the invoice.",
-            "default": "null",
             "minLength": 1,
             "example": "Professional invoice"
           },
@@ -62232,21 +61719,18 @@
           "notes": {
             "type": "string",
             "description": "Notes related to the invoice.",
-            "default": "null",
             "nullable": true,
             "example": "This is a note."
           },
           "paymentDetails": {
             "type": "string",
             "description": "Details of how to pay the invoice.",
-            "default": "null",
             "nullable": true,
             "example": "BSB 134-456, Account 987654"
           },
           "customFields": {
             "type": "array",
             "description": "List of custom fields.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/SalesTransactionCustomFieldValueInput"
@@ -62279,20 +61763,17 @@
             "type": "string",
             "description": "The date when the service was provided.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-01-01"
           },
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Project A:Project B:Project C"
           },
           "itemDetails": {
             "description": "Details of an item used on an invoice line item.\nThis must be omitted if `accountDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -62302,7 +61783,6 @@
           },
           "accountDetails": {
             "description": "Details of an account used on an invoice line item.\nThis must be omitted if `itemDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -62313,7 +61793,6 @@
           "description": {
             "type": "string",
             "description": "The description of the line.",
-            "default": "null",
             "nullable": true,
             "example": "This is my new line"
           },
@@ -62321,14 +61800,12 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "taxRate": {
             "type": "string",
             "description": "The tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           },
@@ -62336,26 +61813,22 @@
             "type": "boolean",
             "readOnly": true,
             "description": "Whether the tax amount has been modified.",
-            "default": "null",
             "nullable": true,
             "example": false
           },
           "isFullWidthDescription": {
             "type": "boolean",
             "description": "Whether the line item is a full width description only item.",
-            "default": "null",
             "nullable": true,
             "example": false
           },
           "parentLineId": {
             "type": "string",
             "description": "Parent id of line item if RowType is set to Data",
-            "default": "null",
             "nullable": true
           },
           "rowType": {
             "description": "Row type of line item.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -62375,7 +61848,6 @@
           "transactionLinks": {
             "type": "array",
             "description": "Details of transactions that are linked to the invoice.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/InvoiceLineItemTransactionLink"
@@ -62384,7 +61856,6 @@
           "classification": {
             "type": "string",
             "description": "The id or full name of the classification that the line item relates to.\nNote that the full name includes the name(s) of any parent classification(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Classification A:Classification B"
           },
@@ -62392,7 +61863,6 @@
             "type": "string",
             "description": "lineId of the line item",
             "format": "guid",
-            "default": "null",
             "nullable": true
           }
         }
@@ -62717,6 +62187,7 @@
             "example": "This is an invoice"
           },
           "fullDetails": {
+            "description": "The full details of the audit history entry.",
             "type": "string",
             "nullable": true
           },
@@ -63360,10 +62831,12 @@
         "additionalProperties": false,
         "properties": {
           "itemId": {
+            "description": "The id of the inventory item.",
             "type": "string",
             "format": "guid"
           },
           "canShowQuantityOnPurchaseOrder": {
+            "description": "Whether the item quantity can be shown on purchase orders.",
             "type": "boolean"
           },
           "ledgerAccount": {
@@ -63443,7 +62916,6 @@
           "itemCode": {
             "type": "string",
             "description": "The item code.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "WID001"
@@ -63461,7 +62933,6 @@
           },
           "purchase": {
             "description": "Details for the item when it is purchased.",
-            "default": "null",
             "nullable": true,
             "example": {
               "price": 4.54545455,
@@ -63478,7 +62949,6 @@
           },
           "sale": {
             "description": "Details for the item when it is sold.",
-            "default": "null",
             "nullable": true,
             "example": {
               "price": 4.54545455,
@@ -63505,7 +62975,6 @@
           "customFields": {
             "type": "array",
             "description": "The custom fields and their values for the item.",
-            "default": "null",
             "nullable": true,
             "example": {
               "customFields": [
@@ -63551,7 +63020,6 @@
             "type": "number",
             "description": "The item's price.\nIf the item's `amountTaxStatus` is `Inclusive` then the price includes tax (gross).\nIf the item's `amountTaxStatus` is `Exclusive` then the price excludes tax (net).",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 4.54545455
           },
@@ -63559,7 +63027,6 @@
             "type": "integer",
             "description": "The accuracy (number of decimal places) of the price.",
             "format": "byte",
-            "default": "null",
             "nullable": true,
             "example": 8
           },
@@ -63572,7 +63039,6 @@
           "description": {
             "type": "string",
             "description": "The description.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "sell item"
@@ -63580,7 +63046,6 @@
           "taxRate": {
             "type": "string",
             "description": "The tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           }
@@ -63603,7 +63068,6 @@
           "value": {
             "type": "string",
             "description": "The custom field value.",
-            "default": "null",
             "nullable": true,
             "example": "x@y.com"
           }
@@ -63834,7 +63298,6 @@
           "itemCode": {
             "type": "string",
             "description": "The item code.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "WID001"
@@ -63852,7 +63315,6 @@
           },
           "purchase": {
             "description": "Details for the item when it is purchased.",
-            "default": "null",
             "nullable": true,
             "example": {
               "price": 4.54545455,
@@ -63869,7 +63331,6 @@
           },
           "sale": {
             "description": "Details for the item when it is sold.",
-            "default": "null",
             "nullable": true,
             "example": {
               "price": 4.54545455,
@@ -63896,7 +63357,6 @@
           "customFields": {
             "type": "array",
             "description": "The custom fields and their values for the item.",
-            "default": "null",
             "nullable": true,
             "example": {
               "customFields": [
@@ -64313,7 +63773,6 @@
           "description": {
             "type": "string",
             "description": "Description of the journal.",
-            "default": "null",
             "nullable": true,
             "example": "System generated bank account opening balance journal."
           },
@@ -64354,7 +63813,6 @@
           },
           "transactionType": {
             "description": "The type of transaction.",
-            "default": "null",
             "nullable": true,
             "example": "Sale",
             "oneOf": [
@@ -64373,7 +63831,6 @@
             "type": "number",
             "description": "The debit amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 200.0
           },
@@ -64381,14 +63838,12 @@
             "type": "number",
             "description": "The credit amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": null
           },
           "taxRate": {
             "type": "string",
             "description": "The id or name of the tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           },
@@ -64396,35 +63851,30 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 20.0
           },
           "notes": {
             "type": "string",
             "description": "Notes.",
-            "default": "null",
             "nullable": true,
             "example": "Notes about the line."
           },
           "entity": {
             "type": "string",
             "description": "The entity (customer/supplier/superfund/employee).",
-            "default": "null",
             "nullable": true,
             "example": "Customer"
           },
           "project": {
             "type": "string",
             "description": "The id or full name of the project.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Project A:Project B:Project C"
           },
           "classification": {
             "type": "string",
             "description": "The id or name of the classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           }
@@ -64493,7 +63943,6 @@
           "summary": {
             "type": "string",
             "description": "Summary of the journal.",
-            "default": "null",
             "nullable": true,
             "example": "Reversal of journal Created on 20 Jan 2022"
           },
@@ -64507,7 +63956,6 @@
           "description": {
             "type": "string",
             "description": "Description of the journal reversal.",
-            "default": "null",
             "nullable": true,
             "example": "System generated bank account opening balance journal."
           }
@@ -65104,7 +64552,6 @@
           "description": {
             "type": "string",
             "description": "The description of the account.",
-            "default": "empty string",
             "maxLength": 300,
             "nullable": true,
             "example": "Income from sales of widgets"
@@ -65112,7 +64559,6 @@
           "parentLedgerAccount": {
             "type": "string",
             "description": "The parent ledger account if there is one.",
-            "default": "null",
             "nullable": true,
             "example": "Income"
           },
@@ -65138,7 +64584,6 @@
           "defaultTaxRate": {
             "type": "string",
             "description": "The default tax rate for the account.",
-            "default": "null",
             "nullable": true,
             "example": "NCG"
           },
@@ -65154,7 +64599,6 @@
           "accountCode": {
             "type": "string",
             "description": "The account code.",
-            "default": "null",
             "maxLength": 10,
             "nullable": true,
             "example": "2-2040"
@@ -65162,7 +64606,6 @@
           "exportCode": {
             "type": "string",
             "description": "The export code for the account.",
-            "default": "null",
             "maxLength": 30,
             "nullable": true,
             "example": "ABC-99"
@@ -65180,7 +64623,6 @@
           },
           "bankAccount": {
             "description": "The bank account details - **only** when the `accountType` is `CurrentAsset_Bank`.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -65190,7 +64632,6 @@
           },
           "creditAccount": {
             "description": "The credit account details - **only** when the `accountType` is `CurrentLiability_CreditCard`.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -65212,7 +64653,6 @@
             "type": "string",
             "description": "When the bank account was opened.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-05-14"
           },
@@ -65220,28 +64660,24 @@
             "type": "string",
             "description": "The date when transactions are locked.\nTransactions dated on or before this date cannot be amended.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-06-30"
           },
           "bankBranchNumber": {
             "type": "string",
             "description": "AU: BSB number (exactly 6 characters). UK: Sort Code. NZ: Bank number (exactly 2 characters).",
-            "default": "null",
             "nullable": true,
             "example": "123456"
           },
           "bankAccountNumberExtra": {
             "type": "string",
             "description": "AU: not used. NZ: Branch number (max 4 characters).",
-            "default": "null",
             "nullable": true,
             "example": "3456"
           },
           "bankAccountNumberSuffix": {
             "type": "string",
             "description": "AU: not used. NZ: Suffix (max 3 characters).",
-            "default": "null",
             "nullable": true,
             "example": "00"
           },
@@ -65255,7 +64691,6 @@
           "bankAccountNumber": {
             "type": "string",
             "description": "Account number. NZ: max 7 characters.",
-            "default": "null",
             "nullable": true,
             "example": "987654"
           },
@@ -65263,7 +64698,6 @@
             "type": "number",
             "description": "The bank account's opening balance.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 1000
           },
@@ -65271,7 +64705,6 @@
             "type": "string",
             "description": "The id of the financial institution.",
             "format": "guid",
-            "default": "null",
             "nullable": true,
             "example": "76efba3f-2483-4bb8-88e3-7f0786366a6c"
           },
@@ -65283,7 +64716,6 @@
           "payerIdentifier": {
             "type": "string",
             "description": "The APCA number to identify the payer.",
-            "default": "null",
             "nullable": true,
             "example": "125876"
           }
@@ -65298,7 +64730,6 @@
             "type": "string",
             "description": "When the credit account was opened.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-05-14"
           },
@@ -65306,7 +64737,6 @@
             "type": "string",
             "description": "The date when transactions are locked.\nTransactions dated on or before this date cannot be amended.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-06-30"
           },
@@ -65314,7 +64744,6 @@
             "type": "number",
             "description": "The credit account's opening balance.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 1000
           }
@@ -65339,7 +64768,6 @@
           "description": {
             "type": "string",
             "description": "The description of the account.",
-            "default": "empty string",
             "maxLength": 300,
             "nullable": true,
             "example": "Income from sales of widgets"
@@ -65347,7 +64775,6 @@
           "parentLedgerAccount": {
             "type": "string",
             "description": "The parent ledger account if there is one.",
-            "default": "null",
             "nullable": true,
             "example": "Income"
           },
@@ -65373,7 +64800,6 @@
           "defaultTaxRate": {
             "type": "string",
             "description": "The default tax rate for the account.",
-            "default": "null",
             "nullable": true,
             "example": "NCG"
           },
@@ -65389,7 +64815,6 @@
           "accountCode": {
             "type": "string",
             "description": "The account code.",
-            "default": "null",
             "maxLength": 10,
             "nullable": true,
             "example": "2-2040"
@@ -65397,7 +64822,6 @@
           "exportCode": {
             "type": "string",
             "description": "The export code for the account.",
-            "default": "null",
             "maxLength": 30,
             "nullable": true,
             "example": "ABC-99"
@@ -65415,7 +64839,6 @@
           },
           "bankAccount": {
             "description": "The bank account details - **only** when the `accountType` is `CurrentAsset_Bank`.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -65425,7 +64848,6 @@
           },
           "creditAccount": {
             "description": "The credit account details - **only** when the `accountType` is `CurrentLiability_CreditCard`.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -65447,7 +64869,6 @@
             "type": "string",
             "description": "When the bank account was opened.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-05-14"
           },
@@ -65455,28 +64876,24 @@
             "type": "string",
             "description": "The date when transactions are locked.\nTransactions dated on or before this date cannot be amended.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-06-30"
           },
           "bankBranchNumber": {
             "type": "string",
             "description": "AU: BSB number (exactly 6 characters). UK: Sort Code. NZ: Bank number (exactly 2 characters).",
-            "default": "null",
             "nullable": true,
             "example": "123456"
           },
           "bankAccountNumberExtra": {
             "type": "string",
             "description": "AU: not used. NZ: Branch number (max 4 characters).",
-            "default": "null",
             "nullable": true,
             "example": "3456"
           },
           "bankAccountNumberSuffix": {
             "type": "string",
             "description": "AU: not used. NZ: Suffix (max 3 characters).",
-            "default": "null",
             "nullable": true,
             "example": "00"
           },
@@ -65490,7 +64907,6 @@
           "bankAccountNumber": {
             "type": "string",
             "description": "Account number. NZ: max 7 characters.",
-            "default": "null",
             "nullable": true,
             "example": "987654"
           },
@@ -65498,7 +64914,6 @@
             "type": "number",
             "description": "The bank account's opening balance.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 1000
           },
@@ -65506,7 +64921,6 @@
             "type": "string",
             "description": "The id of the financial institution.",
             "format": "guid",
-            "default": "null",
             "nullable": true,
             "example": "76efba3f-2483-4bb8-88e3-7f0786366a6c"
           },
@@ -65518,7 +64932,6 @@
           "payerIdentifier": {
             "type": "string",
             "description": "The APCA number to identify the payer.",
-            "default": "null",
             "nullable": true,
             "example": "125876"
           },
@@ -65540,7 +64953,6 @@
             "type": "string",
             "description": "When the credit account was opened.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-05-14"
           },
@@ -65548,7 +64960,6 @@
             "type": "string",
             "description": "The date when transactions are locked.\nTransactions dated on or before this date cannot be amended.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-06-30"
           },
@@ -65556,7 +64967,6 @@
             "type": "number",
             "description": "The credit account's opening balance.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 1000
           },
@@ -66291,21 +65701,18 @@
           "ledgerAccount": {
             "type": "string",
             "description": "The id or name of the bank/cash/credit account where the money was received.",
-            "default": "The default bank account.",
             "nullable": true,
             "example": "My bank account"
           },
           "paymentMethod": {
             "type": "string",
             "description": "The id or name of the payment method used.",
-            "default": "null",
             "nullable": true,
             "example": "Mastercard"
           },
           "reference": {
             "type": "string",
             "description": "The payment reference.",
-            "default": "null",
             "maxLength": 200,
             "nullable": true,
             "example": "My reference"
@@ -66313,7 +65720,6 @@
           "notes": {
             "type": "string",
             "description": "Notes related to the payment",
-            "default": "null",
             "maxLength": 255,
             "nullable": true,
             "example": "This is a note."
@@ -66332,7 +65738,6 @@
           "internalNotes": {
             "type": "string",
             "description": "Internal Notes related to the payment",
-            "default": "null",
             "maxLength": 400,
             "nullable": true,
             "example": "This is an internal note."
@@ -66341,21 +65746,18 @@
             "type": "string",
             "readOnly": true,
             "description": "The accounts payable ledger account.\n_Note:_ It is not currently possible to create multiple Accounts Payable accounts so this field is read-only and will be ignored.",
-            "default": "The default Accounts Payable account",
             "nullable": true,
             "example": "Accounts Payable"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
           "transactionLinks": {
             "type": "array",
             "description": "Details of transactions that the payment should be allocated to.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/PaymentTransactionLinkInput"
@@ -66369,7 +65771,6 @@
           "lineItems": {
             "type": "array",
             "description": "The individual items that make up the payment",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/PaymentLineItemInput"
@@ -66428,13 +65829,11 @@
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Project A:Project B:Project C"
           },
           "itemDetails": {
             "description": "Details of an item used on an invoice line item.\nThis must be omitted if `accountDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -66444,7 +65843,6 @@
           },
           "accountDetails": {
             "description": "Details of an account used on an invoice line item.\nThis must be omitted if `itemDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -66455,7 +65853,6 @@
           "description": {
             "type": "string",
             "description": "The description of the line.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "This is my new line"
@@ -66463,7 +65860,6 @@
           "taxRate": {
             "type": "string",
             "description": "The tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           },
@@ -66471,14 +65867,12 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           }
@@ -66502,7 +65896,6 @@
             "type": "number",
             "description": "The price of each item including or excluding tax (depending on the `amountTaxStatus`).",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 5.5
           },
@@ -66510,7 +65903,6 @@
             "type": "number",
             "description": "The quantity purchased.",
             "format": "decimal",
-            "default": "nulll",
             "nullable": true,
             "example": 1
           },
@@ -66518,7 +65910,6 @@
             "type": "number",
             "description": "The total discount for the line item.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
@@ -66526,7 +65917,6 @@
             "type": "number",
             "description": "The discount percentage for the line item.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 25
           },
@@ -66557,7 +65947,6 @@
             "type": "number",
             "description": "The quantity purchased.",
             "format": "decimal",
-            "default": "nulll",
             "nullable": true,
             "example": 1
           },
@@ -66597,21 +65986,18 @@
           "ledgerAccount": {
             "type": "string",
             "description": "The id or name of the bank/cash/credit account where the money was received.",
-            "default": "The default bank account.",
             "nullable": true,
             "example": "My bank account"
           },
           "paymentMethod": {
             "type": "string",
             "description": "The id or name of the payment method used.",
-            "default": "null",
             "nullable": true,
             "example": "Mastercard"
           },
           "reference": {
             "type": "string",
             "description": "The payment reference.",
-            "default": "null",
             "maxLength": 200,
             "nullable": true,
             "example": "My reference"
@@ -66619,7 +66005,6 @@
           "notes": {
             "type": "string",
             "description": "Notes related to the payment",
-            "default": "null",
             "maxLength": 255,
             "nullable": true,
             "example": "This is a note."
@@ -66638,7 +66023,6 @@
           "internalNotes": {
             "type": "string",
             "description": "Internal Notes related to the payment",
-            "default": "null",
             "maxLength": 400,
             "nullable": true,
             "example": "This is an internal note."
@@ -66647,21 +66031,18 @@
             "type": "string",
             "readOnly": true,
             "description": "The accounts payable ledger account.\n_Note:_ It is not currently possible to create multiple Accounts Payable accounts so this field is read-only and will be ignored.",
-            "default": "The default Accounts Payable account",
             "nullable": true,
             "example": "Accounts Payable"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
           "transactionLinks": {
             "type": "array",
             "description": "Details of transactions that the payment should be allocated to.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/PaymentTransactionLinkInput"
@@ -66675,7 +66056,6 @@
           "lineItems": {
             "type": "array",
             "description": "The individual items that make up the payment",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/PaymentLineItemPut"
@@ -66700,13 +66080,11 @@
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Project A:Project B:Project C"
           },
           "itemDetails": {
             "description": "Details of an item used on an invoice line item.\nThis must be omitted if `accountDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -66716,7 +66094,6 @@
           },
           "accountDetails": {
             "description": "Details of an account used on an invoice line item.\nThis must be omitted if `itemDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -66727,7 +66104,6 @@
           "description": {
             "type": "string",
             "description": "The description of the line.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "This is my new line"
@@ -66735,7 +66111,6 @@
           "taxRate": {
             "type": "string",
             "description": "The tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           },
@@ -66743,14 +66118,12 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -66758,7 +66131,6 @@
             "type": "string",
             "description": "lineId of the line item",
             "format": "guid",
-            "default": "null",
             "nullable": true
           }
         }
@@ -67121,7 +66493,6 @@
           "description": {
             "type": "string",
             "description": "The payment term's description.",
-            "default": "empty string",
             "maxLength": 100,
             "nullable": true,
             "example": "Net due 30 days from issue"
@@ -68342,7 +67713,6 @@
           "description": {
             "type": "string",
             "description": "The type's description.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true
           },
@@ -68728,7 +68098,6 @@
           },
           "amountTaxStatus": {
             "description": "The amount tax status of the amounts in the project.\nIf this field is omitted, the value from the book's tax settings will be used.",
-            "default": "Current value in Settings",
             "nullable": true,
             "example": "Inclusive",
             "oneOf": [
@@ -68740,7 +68109,6 @@
           "parentProject": {
             "type": "string",
             "description": "The parent project.",
-            "default": "null",
             "nullable": true,
             "example": "The parent project"
           },
@@ -68748,7 +68116,6 @@
             "type": "string",
             "description": "The date the project starts.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-09-02"
           },
@@ -68756,20 +68123,17 @@
             "type": "string",
             "description": "The date the project ends.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2020-09-09"
           },
           "description": {
             "type": "string",
             "description": "A description of the project.",
-            "default": "null",
             "nullable": true,
             "example": "This is a description of the project."
           },
           "billingMethod": {
             "description": "The billing method for the project.",
-            "default": "null",
             "example": "ProjectItemRate",
             "oneOf": [
               {
@@ -68780,7 +68144,6 @@
           "items": {
             "type": "array",
             "description": "Items used in the project.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ProjectItemInput"
@@ -68789,7 +68152,6 @@
           "customers": {
             "type": "array",
             "description": "Customers linked to the project.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ProjectCustomerInput"
@@ -68798,7 +68160,6 @@
           "suppliers": {
             "type": "array",
             "description": "Suppliers linked to the project.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ProjectSupplierInput"
@@ -68824,7 +68185,6 @@
             "type": "number",
             "description": "Rate at which item is charged for this project.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 199.99
           }
@@ -69425,14 +68785,12 @@
             "type": "string",
             "description": "The expiry date of purchase order.",
             "format": "date",
-            "default": "null",
             "nullable": true,
             "example": "2020-03-06"
           },
           "deliveryAddress": {
             "type": "string",
             "description": "The delivery address of the purchase order.",
-            "default": "null",
             "nullable": true,
             "example": "123 Smith Street, Sydney NSW 2000"
           },
@@ -69448,28 +68806,24 @@
           "notes": {
             "type": "string",
             "description": "Notes related to the purchase order.",
-            "default": "null",
             "nullable": true,
             "example": "This is a note."
           },
           "reference": {
             "type": "string",
             "description": "The purchase order reference.",
-            "default": "null",
             "nullable": true,
             "example": "My reference"
           },
           "template": {
             "type": "string",
             "description": "The template used to print or email the purchase order.",
-            "default": "The default purchase order template",
             "nullable": true,
             "example": "Light Purchase Order"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -69607,14 +68961,12 @@
             "type": "string",
             "description": "The expiry date of purchase order.",
             "format": "date",
-            "default": "null",
             "nullable": true,
             "example": "2020-03-06"
           },
           "deliveryAddress": {
             "type": "string",
             "description": "The delivery address of the purchase order.",
-            "default": "null",
             "nullable": true,
             "example": "123 Smith Street, Sydney NSW 2000"
           },
@@ -69630,28 +68982,24 @@
           "notes": {
             "type": "string",
             "description": "Notes related to the purchase order.",
-            "default": "null",
             "nullable": true,
             "example": "This is a note."
           },
           "reference": {
             "type": "string",
             "description": "The purchase order reference.",
-            "default": "null",
             "nullable": true,
             "example": "My reference"
           },
           "template": {
             "type": "string",
             "description": "The template used to print or email the purchase order.",
-            "default": "The default purchase order template",
             "nullable": true,
             "example": "Light Purchase Order"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -69765,7 +69113,6 @@
             "type": "string",
             "description": "The delivery date of the purchase order.",
             "format": "date",
-            "default": "null",
             "nullable": true,
             "example": "2020-03-06"
           },
@@ -69804,14 +69151,12 @@
           "template": {
             "type": "string",
             "description": "The template used to print or email the purchase order.",
-            "default": "The default purchase order template",
             "nullable": true,
             "example": "Light Purchase Order"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -70316,21 +69661,18 @@
           "ledgerAccount": {
             "type": "string",
             "description": "The id or name of the bank/cash/credit account where the money was received.",
-            "default": "The default bank account.",
             "nullable": true,
             "example": "My bank account"
           },
           "paymentMethod": {
             "type": "string",
             "description": "The id or name of the payment method used.",
-            "default": "null",
             "nullable": true,
             "example": "Mastercard"
           },
           "reference": {
             "type": "string",
             "description": "The receipt reference.",
-            "default": "null",
             "maxLength": 200,
             "nullable": true,
             "example": "My reference"
@@ -70338,7 +69680,6 @@
           "notes": {
             "type": "string",
             "description": "Notes related to the receipt.",
-            "default": "null",
             "maxLength": 255,
             "nullable": true,
             "example": "This is a note."
@@ -70363,7 +69704,6 @@
           "internalNotes": {
             "type": "string",
             "description": "Internal Notes related to the receipt.",
-            "default": "null",
             "maxLength": 400,
             "nullable": true,
             "example": "This is an internal note."
@@ -70372,21 +69712,18 @@
             "type": "string",
             "readOnly": true,
             "description": "The accounts receivable ledger account.\n_Note:_ It is not currently possible to create multiple Accounts Receivable accounts so this field is read-only and will be ignored.",
-            "default": "The default Accounts Receivable account",
             "nullable": true,
             "example": "Accounts Receivable"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
           "transactionLinks": {
             "type": "array",
             "description": "Details of transactions that the receipt should be allocated to.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ReceiptTransactionLinkInput"
@@ -70395,7 +69732,6 @@
           "lineItems": {
             "type": "array",
             "description": "The individual items that make up the receipt.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ReceiptLineItemInput"
@@ -70454,13 +69790,11 @@
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Project A:Project B:Project C"
           },
           "itemDetails": {
             "description": "Details of an item used on an invoice line item.\nThis must be omitted if `accountDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -70470,7 +69804,6 @@
           },
           "accountDetails": {
             "description": "Details of an account used on an invoice line item.\nThis must be omitted if `itemDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -70481,7 +69814,6 @@
           "description": {
             "type": "string",
             "description": "The description of the line.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "This is my new line"
@@ -70490,14 +69822,12 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "taxRate": {
             "type": "string",
             "description": "The tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           },
@@ -70505,14 +69835,12 @@
             "type": "boolean",
             "readOnly": true,
             "description": "Whether the tax amount has been modified.",
-            "default": "null",
             "nullable": true,
             "example": false
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           }
@@ -70536,7 +69864,6 @@
             "type": "number",
             "description": "The price of each item including or excluding tax (depending on the `amountTaxStatus`).",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 5.5
           },
@@ -70544,7 +69871,6 @@
             "type": "number",
             "description": "The quantity purchased.",
             "format": "decimal",
-            "default": "nulll",
             "nullable": true,
             "example": 1
           },
@@ -70552,7 +69878,6 @@
             "type": "number",
             "description": "The total discount for the line item.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
@@ -70560,7 +69885,6 @@
             "type": "number",
             "description": "The discount percentage for the line item.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 25
           },
@@ -70591,7 +69915,6 @@
             "type": "number",
             "description": "The quantity purchased.",
             "format": "decimal",
-            "default": "nulll",
             "nullable": true,
             "example": 1
           },
@@ -70631,21 +69954,18 @@
           "ledgerAccount": {
             "type": "string",
             "description": "The id or name of the bank/cash/credit account where the money was received.",
-            "default": "The default bank account.",
             "nullable": true,
             "example": "My bank account"
           },
           "paymentMethod": {
             "type": "string",
             "description": "The id or name of the payment method used.",
-            "default": "null",
             "nullable": true,
             "example": "Mastercard"
           },
           "reference": {
             "type": "string",
             "description": "The receipt reference.",
-            "default": "null",
             "maxLength": 200,
             "nullable": true,
             "example": "My reference"
@@ -70653,7 +69973,6 @@
           "notes": {
             "type": "string",
             "description": "Notes related to the receipt.",
-            "default": "null",
             "maxLength": 255,
             "nullable": true,
             "example": "This is a note."
@@ -70678,7 +69997,6 @@
           "internalNotes": {
             "type": "string",
             "description": "Internal Notes related to the receipt.",
-            "default": "null",
             "maxLength": 400,
             "nullable": true,
             "example": "This is an internal note."
@@ -70687,21 +70005,18 @@
             "type": "string",
             "readOnly": true,
             "description": "The accounts receivable ledger account.\n_Note:_ It is not currently possible to create multiple Accounts Receivable accounts so this field is read-only and will be ignored.",
-            "default": "The default Accounts Receivable account",
             "nullable": true,
             "example": "Accounts Receivable"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
           "transactionLinks": {
             "type": "array",
             "description": "Details of transactions that the receipt should be allocated to.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ReceiptTransactionLinkInput"
@@ -70710,7 +70025,6 @@
           "lineItems": {
             "type": "array",
             "description": "The individual items that make up the receipt.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ReceiptLineItemPut"
@@ -70735,13 +70049,11 @@
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Project A:Project B:Project C"
           },
           "itemDetails": {
             "description": "Details of an item used on an invoice line item.\nThis must be omitted if `accountDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -70751,7 +70063,6 @@
           },
           "accountDetails": {
             "description": "Details of an account used on an invoice line item.\nThis must be omitted if `itemDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -70762,7 +70073,6 @@
           "description": {
             "type": "string",
             "description": "The description of the line.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "This is my new line"
@@ -70771,14 +70081,12 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "taxRate": {
             "type": "string",
             "description": "The tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           },
@@ -70786,14 +70094,12 @@
             "type": "boolean",
             "readOnly": true,
             "description": "Whether the tax amount has been modified.",
-            "default": "null",
             "nullable": true,
             "example": false
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -70801,7 +70107,6 @@
             "type": "string",
             "description": "lineId of the line item",
             "format": "guid",
-            "default": "null",
             "nullable": true
           }
         }
@@ -71186,6 +70491,7 @@
         "additionalProperties": false,
         "properties": {
           "frequency": {
+            "description": "How often the recurring schedule repeats.",
             "nullable": true,
             "oneOf": [
               {
@@ -71194,10 +70500,12 @@
             ]
           },
           "startDate": {
+            "description": "The date and time that the recurring schedule starts.",
             "type": "string",
             "format": "date-time"
           },
           "endCondition": {
+            "description": "The condition that ends the recurring schedule.",
             "nullable": true,
             "oneOf": [
               {
@@ -71216,10 +70524,12 @@
             "$ref": "#/components/schemas/FrequencyPeriod"
           },
           "value": {
+            "description": "The number of frequency periods between each occurrence.",
             "type": "integer",
             "format": "int32"
           },
           "lastDayOfEachMonth": {
+            "description": "Whether the transaction recurs on the last day of each month.",
             "type": "boolean"
           }
         }
@@ -71289,6 +70599,7 @@
         "additionalProperties": false,
         "properties": {
           "autoPaymentProvider": {
+            "description": "The provider used to automatically take payment for the recurring transaction.",
             "type": "string",
             "nullable": true
           }
@@ -72068,7 +71379,6 @@
           "leaveItems": {
             "type": "array",
             "description": "A list of leave item IDs to include in the report.\nIf omitted, all leave items will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "a16010b7-43a0-40cc-a3de-151420659df7"
@@ -72081,7 +71391,6 @@
           "employees": {
             "type": "array",
             "description": "A list of employee IDs to include in the report.\nIf omitted, all employees will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "3e3b17cc-9071-4822-893e-9ef67dbf572c"
@@ -72105,7 +71414,6 @@
           "columns": {
             "type": "array",
             "description": "A list of report columns to include in the report.\nIf omitted, all columns will be returned.",
-            "default": "null",
             "nullable": true,
             "example": [
               "OteValue",
@@ -72465,7 +71773,6 @@
             "type": "string",
             "description": "The 'from' date for the report.\nOnly required if `period` is `SpecifiedDates`.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2021-01-01"
           },
@@ -72473,14 +71780,12 @@
             "type": "string",
             "description": "The 'to' date for the report.\nOnly required if `period` is `SpecifiedDates`.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2021-12-31"
           },
           "payruns": {
             "type": "array",
             "description": "A list of pay run IDs to include in the report.\nIf omitted, all pay runs will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "a16010b7-43a0-40cc-a3de-151420659df7"
@@ -72493,7 +71798,6 @@
           "employees": {
             "type": "array",
             "description": "A list of employee IDs to include in the report.\nIf omitted, all employees will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "3e3b17cc-9071-4822-893e-9ef67dbf572c"
@@ -72517,7 +71821,6 @@
           "columns": {
             "type": "array",
             "description": "A list of columns to include in the report.\nIf omitted, all columns will be returned.",
-            "default": "null",
             "nullable": true,
             "example": [
               "Dates",
@@ -72555,7 +71858,6 @@
             "type": "string",
             "description": "The 'from' date for the report.\nOnly required if `period` is `SpecifiedDates`.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2021-01-01"
           },
@@ -72563,14 +71865,12 @@
             "type": "string",
             "description": "The 'to' date for the report.\nOnly required if `period` is `SpecifiedDates`.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2021-12-31"
           },
           "payruns": {
             "type": "array",
             "description": "A list of pay run IDs to include in the report.\nIf omitted, all pay runs will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "a16010b7-43a0-40cc-a3de-151420659df7"
@@ -72594,7 +71894,6 @@
           "columns": {
             "type": "array",
             "description": "A list of columns to include in the report.\nIf omitted, all columns will be returned.",
-            "default": "null",
             "nullable": true,
             "example": [
               "Code",
@@ -72659,7 +71958,6 @@
             "type": "string",
             "description": "The 'from' date for the report.\nOnly required if `period` is `SpecifiedDates`.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2021-01-01"
           },
@@ -72667,14 +71965,12 @@
             "type": "string",
             "description": "The 'to' date for the report.\nOnly required if `period` is `SpecifiedDates`.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2021-12-31"
           },
           "payruns": {
             "type": "array",
             "description": "A list of pay run IDs to include in the report.\nIf omitted, all pay runs will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "a16010b7-43a0-40cc-a3de-151420659df7"
@@ -72687,7 +71983,6 @@
           "employees": {
             "type": "array",
             "description": "A list of employee IDs to include in the report.\nIf omitted, all employees will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "3e3b17cc-9071-4822-893e-9ef67dbf572c"
@@ -72700,7 +71995,6 @@
           "superfunds": {
             "type": "array",
             "description": "A list of superfund IDs to include in the report.\nIf omitted, all superfunds will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "3e3b17cc-9071-4822-893e-9ef67dbf572c"
@@ -72724,7 +72018,6 @@
           "columns": {
             "type": "array",
             "description": "A list of columns to include in the report.\nIf omitted, all columns will be returned.",
-            "default": "null",
             "nullable": true,
             "example": [
               "PayRunName",
@@ -72790,7 +72083,6 @@
             "type": "string",
             "description": "The 'from' date for the report.\nOnly required if `period` is `SpecifiedDates`.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2021-01-01"
           },
@@ -72798,7 +72090,6 @@
             "type": "string",
             "description": "The 'to' date for the report.\nOnly required if `period` is `SpecifiedDates`.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2021-12-31"
           },
@@ -72814,7 +72105,6 @@
           "employees": {
             "type": "array",
             "description": "A list of employee IDs to include in the report.\nIf omitted, all employees will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "3e3b17cc-9071-4822-893e-9ef67dbf572c"
@@ -72827,7 +72117,6 @@
           "projects": {
             "type": "array",
             "description": "A list of project IDs to include in the report.\nIf omitted, all projects will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "bfe62dbb-2ecb-4948-8a9a-efeacb84386d"
@@ -72840,7 +72129,6 @@
           "classifications": {
             "type": "array",
             "description": "A list of classification IDs to include in the report.\nIf omitted, all classifications will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "fa2877aa-dcc6-464a-b64f-556b66026689"
@@ -72853,7 +72141,6 @@
           "customers": {
             "type": "array",
             "description": "A list of customer IDs to include in the report.\nIf omitted, all customers will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "e214d5b4-7bda-4e4b-b0b4-5ffe6b7ac19b"
@@ -72866,7 +72153,6 @@
           "serviceItems": {
             "type": "array",
             "description": "A list of service item IDs to include in the report.\nIf omitted, all service items will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "b9b11d3e-9eb5-4dc9-b3a9-e2afe7d07460"
@@ -72879,7 +72165,6 @@
           "status": {
             "type": "array",
             "description": "The billing statuses to include in the report.\nIf omitted, all billing statuses will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "NonBillable",
@@ -72892,7 +72177,6 @@
           "timesheetStatus": {
             "type": "array",
             "description": "The timesheet statuses to include in the report.\nIf omitted, all timesheet statuses will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "Draft",
@@ -72916,7 +72200,6 @@
           "columns": {
             "type": "array",
             "description": "A list of columns to include in the report.\nIf omitted, all columns will be returned.",
-            "default": "null",
             "nullable": true,
             "example": [
               "Employee",
@@ -73051,7 +72334,6 @@
             "type": "string",
             "description": "The 'from' date for the report.\nOnly required if `period` is `SpecifiedDates`.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2021-01-01"
           },
@@ -73059,7 +72341,6 @@
             "type": "string",
             "description": "The 'to' date for the report.\nOnly required if `period` is `SpecifiedDates`.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2021-12-31"
           },
@@ -73075,7 +72356,6 @@
           "payRuns": {
             "type": "array",
             "description": "A list of pay run IDs to include in the report.\nIf omitted, all pay runs will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "3e3b17cc-9071-4822-893e-9ef67dbf572c"
@@ -73088,7 +72368,6 @@
           "superFundProducts": {
             "type": "array",
             "description": "A list of super fund product IDs to include in the report.\nIf omitted, all super fund products will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "3e3b17cc-9071-4822-893e-9ef67dbf572c"
@@ -73101,7 +72380,6 @@
           "employees": {
             "type": "array",
             "description": "A list of employee IDs to include in the report.\nIf omitted, all employees will be included.",
-            "default": "null",
             "nullable": true,
             "example": [
               "3e3b17cc-9071-4822-893e-9ef67dbf572c"
@@ -73125,7 +72403,6 @@
           "columns": {
             "type": "array",
             "description": "A list of columns to include in the report.\nIf omitted, all columns will be returned.",
-            "default": "null",
             "nullable": true,
             "example": [
               "PayRunName",
@@ -75417,42 +74694,36 @@
           "notes": {
             "type": "string",
             "description": "Notes related to the sales order.",
-            "default": "null",
             "nullable": true,
             "example": "This is a note."
           },
           "paymentDetails": {
             "type": "string",
             "description": "The payment details (\"how to pay\") shown on the sales order.",
-            "default": "null",
             "nullable": true,
             "example": "Direct deposit to BSB 123-456, account 12345678."
           },
           "reference": {
             "type": "string",
             "description": "The sales order reference.",
-            "default": "null",
             "nullable": true,
             "example": "My reference"
           },
           "customerPurchaseOrderNumber": {
             "type": "string",
             "description": "The customer's purchase order number.",
-            "default": "null",
             "nullable": true,
             "example": "PO-98765"
           },
           "template": {
             "type": "string",
             "description": "The template used to print or email the sales order.",
-            "default": "The default sales order template",
             "nullable": true,
             "example": "Light Sales Order"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -75604,42 +74875,36 @@
           "notes": {
             "type": "string",
             "description": "Notes related to the sales order.",
-            "default": "null",
             "nullable": true,
             "example": "This is a note."
           },
           "paymentDetails": {
             "type": "string",
             "description": "The payment details (\"how to pay\") shown on the sales order.",
-            "default": "null",
             "nullable": true,
             "example": "Direct deposit to BSB 123-456, account 12345678."
           },
           "reference": {
             "type": "string",
             "description": "The sales order reference.",
-            "default": "null",
             "nullable": true,
             "example": "My reference"
           },
           "customerPurchaseOrderNumber": {
             "type": "string",
             "description": "The customer's purchase order number.",
-            "default": "null",
             "nullable": true,
             "example": "PO-98765"
           },
           "template": {
             "type": "string",
             "description": "The template used to print or email the sales order.",
-            "default": "The default sales order template",
             "nullable": true,
             "example": "Light Sales Order"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -75802,14 +75067,12 @@
           "template": {
             "type": "string",
             "description": "The template used to print or email the sales order.",
-            "default": "The default sales order template",
             "nullable": true,
             "example": "Light Sales Order"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -76371,35 +75634,30 @@
             "type": "string",
             "description": "Transactions on or before this date cannot be changed.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2019-06-30"
           },
           "entity": {
             "type": "string",
             "description": "The id or name of the entity type of business.",
-            "default": "null",
             "nullable": true,
             "example": "Company"
           },
           "industry": {
             "type": "string",
             "description": "The id or name of the industry of business.",
-            "default": "null",
             "nullable": true,
             "example": "Accommodation and food services"
           },
           "category": {
             "type": "string",
             "description": "The id or name of the industry's category of business.",
-            "default": "null",
             "nullable": true,
             "example": "Cafes, restaurants and takeaway food services"
           },
           "businessType": {
             "type": "string",
             "description": "The id or name of the industry category's business type.",
-            "default": "null",
             "nullable": true,
             "example": "Fast food retailing"
           },
@@ -79948,28 +79206,24 @@
           "description": {
             "type": "string",
             "description": "The description of the stock adjustment.",
-            "default": "null",
             "nullable": true,
             "example": "My stock adjustment"
           },
           "account": {
             "type": "string",
             "description": "Gets or sets the bank account associated with the operation.",
-            "default": "The default bank account.",
             "nullable": true,
             "example": "My bank account"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
           "lineItems": {
             "type": "array",
             "description": "Line items used in the stock adjustment.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/StockAdjustmentLineItemInput"
@@ -80075,7 +79329,6 @@
           "searchText": {
             "type": "string",
             "description": "The text to search for.",
-            "default": "null",
             "nullable": true,
             "example": "AMG0"
           },
@@ -80142,7 +79395,6 @@
           "searchText": {
             "type": "string",
             "description": "The text to search for.",
-            "default": "null",
             "nullable": true,
             "example": "AMG0"
           },
@@ -80517,7 +79769,6 @@
           "organisationName": {
             "type": "string",
             "description": "The organisation's name.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "Reckon Co."
@@ -80525,7 +79776,6 @@
           "branch": {
             "type": "string",
             "description": "The organisation's branch.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "1234"
@@ -80533,7 +79783,6 @@
           "notes": {
             "type": "string",
             "description": "Notes for the organisation.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "The person to call."
@@ -80541,7 +79790,6 @@
           "businessNumber1": {
             "type": "string",
             "description": "The organisation's business number 1.",
-            "default": "null",
             "maxLength": 20,
             "nullable": true,
             "example": "0218001234"
@@ -80549,7 +79797,6 @@
           "businessNumber2": {
             "type": "string",
             "description": "The organisation's business number 2.",
-            "default": "null",
             "maxLength": 20,
             "nullable": true,
             "example": "0218001234"
@@ -80557,7 +79804,6 @@
           "businessNumber": {
             "type": "string",
             "description": "This applies to NZBN number.",
-            "default": "null",
             "maxLength": 20,
             "nullable": true,
             "example": "0218001234123"
@@ -80576,7 +79822,6 @@
           "addresses": {
             "type": "array",
             "description": "List of addresses.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/AddressInput"
@@ -80585,7 +79830,6 @@
           "phoneNumbers": {
             "type": "array",
             "description": "List of phone numbers.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/PhoneNumberInput"
@@ -80594,7 +79838,6 @@
           "electronicAddresses": {
             "type": "array",
             "description": "List of electronic addresses.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ElectronicAddressInput"
@@ -80617,7 +79860,6 @@
           },
           "bankDetails": {
             "description": "The superfund's bank account details.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -80627,7 +79869,6 @@
           },
           "superFundDetails": {
             "description": "The superfund's details.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -80645,7 +79886,6 @@
           "name": {
             "type": "string",
             "description": "The bank account's name.",
-            "default": "null",
             "maxLength": 50,
             "nullable": true,
             "example": "My bank account"
@@ -80653,7 +79893,6 @@
           "bankBranchNumber": {
             "type": "string",
             "description": "The bank account's branch number.",
-            "default": "null",
             "maxLength": 10,
             "pattern": "^[0-9]*$",
             "nullable": true,
@@ -80662,7 +79901,6 @@
           "bankAccountNumber": {
             "type": "string",
             "description": "The bank account's number.",
-            "default": "null",
             "maxLength": 50,
             "pattern": "^[0-9]*$",
             "nullable": true,
@@ -80677,7 +79915,6 @@
         "properties": {
           "superfundProvider": {
             "description": "The superfundProvider details",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -80687,7 +79924,6 @@
           },
           "smsf": {
             "description": "The SMSF provider details",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -80738,7 +79974,6 @@
           "electronicServiceAddress": {
             "type": "string",
             "description": "The electronic address for service",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "x@y.com"
@@ -81324,7 +80559,6 @@
             "type": "string",
             "description": "The id of the payrun that the line item relates to.",
             "format": "guid",
-            "default": "null",
             "nullable": true,
             "example": "07d9bd4c-393a-4cc6-869d-d9d95c7bb0f4"
           }
@@ -81877,28 +81111,24 @@
           "reference": {
             "type": "string",
             "description": "The supplier credit note reference.",
-            "default": "null",
             "nullable": true,
             "example": "My reference"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
           "template": {
             "type": "string",
             "description": "The template used to print or email the supplier credit note.",
-            "default": "The default supplier credit note template",
             "nullable": true,
             "example": "Professional bill"
           },
           "notes": {
             "type": "string",
             "description": "Notes related to the supplier credit note.",
-            "default": "null",
             "nullable": true,
             "example": "This is a note."
           },
@@ -81928,13 +81158,11 @@
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Project A:Project B:Project C"
           },
           "itemDetails": {
             "description": "Details of an item used on a supplier credit note line item.\nThis must be omitted if `accountDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -81944,7 +81172,6 @@
           },
           "accountDetails": {
             "description": "Details of an account used on a supplier credit note line item.\nThis must be omitted if `itemDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -81955,14 +81182,12 @@
           "description": {
             "type": "string",
             "description": "The description of the line.",
-            "default": "null",
             "nullable": true,
             "example": "This is my new line"
           },
           "taxRate": {
             "type": "string",
             "description": "The tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           },
@@ -81970,14 +81195,12 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           }
@@ -82001,7 +81224,6 @@
             "type": "number",
             "description": "The price of each item including or excluding tax (depending on the `amountTaxStatus`).",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 5.5
           },
@@ -82009,7 +81231,6 @@
             "type": "number",
             "description": "The quantity purchased.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 1
           }
@@ -82033,7 +81254,6 @@
             "type": "number",
             "description": "The quantity purchased.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 1
           },
@@ -82083,28 +81303,24 @@
           "reference": {
             "type": "string",
             "description": "The supplier credit note reference.",
-            "default": "null",
             "nullable": true,
             "example": "My reference"
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
           "template": {
             "type": "string",
             "description": "The template used to print or email the supplier credit note.",
-            "default": "The default supplier credit note template",
             "nullable": true,
             "example": "Professional bill"
           },
           "notes": {
             "type": "string",
             "description": "Notes related to the supplier credit note.",
-            "default": "null",
             "nullable": true,
             "example": "This is a note."
           },
@@ -82134,13 +81350,11 @@
           "project": {
             "type": "string",
             "description": "The id or full name of the project that the line item relates to.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Project A:Project B:Project C"
           },
           "itemDetails": {
             "description": "Details of an item used on a supplier credit note line item.\nThis must be omitted if `accountDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -82150,7 +81364,6 @@
           },
           "accountDetails": {
             "description": "Details of an account used on a supplier credit note line item.\nThis must be omitted if `itemDetails` have been provided.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -82161,14 +81374,12 @@
           "description": {
             "type": "string",
             "description": "The description of the line.",
-            "default": "null",
             "nullable": true,
             "example": "This is my new line"
           },
           "taxRate": {
             "type": "string",
             "description": "The tax rate.",
-            "default": "null",
             "nullable": true,
             "example": "GST"
           },
@@ -82176,14 +81387,12 @@
             "type": "number",
             "description": "The tax amount.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 10
           },
           "classification": {
             "type": "string",
             "description": "The classification.",
-            "default": "null",
             "nullable": true,
             "example": "My classification"
           },
@@ -82191,7 +81400,6 @@
             "type": "string",
             "description": "lineId of the line item",
             "format": "guid",
-            "default": "null",
             "nullable": true
           }
         }
@@ -82591,7 +81799,6 @@
           "organisationName": {
             "type": "string",
             "description": "The organisation's name.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "Reckon Co."
@@ -82599,7 +81806,6 @@
           "branch": {
             "type": "string",
             "description": "The organisation's branch.",
-            "default": "null",
             "maxLength": 100,
             "nullable": true,
             "example": "1234"
@@ -82607,7 +81813,6 @@
           "notes": {
             "type": "string",
             "description": "Notes for the organisation.",
-            "default": "null",
             "maxLength": 1000,
             "nullable": true,
             "example": "The person to call."
@@ -82615,7 +81820,6 @@
           "businessNumber1": {
             "type": "string",
             "description": "The organisation's business number 1.",
-            "default": "null",
             "maxLength": 20,
             "nullable": true,
             "example": "0218001234"
@@ -82623,7 +81827,6 @@
           "businessNumber2": {
             "type": "string",
             "description": "The organisation's business number 2.",
-            "default": "null",
             "maxLength": 20,
             "nullable": true,
             "example": "0218001234"
@@ -82631,7 +81834,6 @@
           "businessNumber": {
             "type": "string",
             "description": "This applies to NZBN number.",
-            "default": "null",
             "maxLength": 20,
             "nullable": true,
             "example": "0218001234123"
@@ -82650,7 +81852,6 @@
           "addresses": {
             "type": "array",
             "description": "List of addresses.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/AddressInput"
@@ -82659,7 +81860,6 @@
           "phoneNumbers": {
             "type": "array",
             "description": "List of phone numbers.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/PhoneNumberInput"
@@ -82668,7 +81868,6 @@
           "electronicAddresses": {
             "type": "array",
             "description": "List of electronic addresses.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/ElectronicAddressInput"
@@ -82696,7 +81895,6 @@
           },
           "bankDetails": {
             "description": "The supplier's bank account details.",
-            "default": "null",
             "nullable": true,
             "oneOf": [
               {
@@ -82708,7 +81906,6 @@
             "type": "string",
             "description": "The date the supplier's ABN (BusinessNumber1) was last validated.",
             "format": "date-time",
-            "default": "null",
             "nullable": true,
             "example": "2026-05-06"
           },
@@ -82716,21 +81913,18 @@
             "type": "number",
             "description": "The credit limit to hold against the contact when it is also a customer.",
             "format": "decimal",
-            "default": "null",
             "nullable": true,
             "example": 12.5
           },
           "paymentTerms": {
             "type": "string",
             "description": "The payment term (id) to hold against the contact when it is also a customer.",
-            "default": "null",
             "nullable": true,
             "example": "4cafd978-14ae-4dbe-8774-e86c29fabdc4"
           },
           "customFields": {
             "type": "array",
             "description": "List of custom field values to hold against the contact when it is also a customer.",
-            "default": "null",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/OrganisationCustomFieldValueInput"
@@ -82746,7 +81940,6 @@
           "name": {
             "type": "string",
             "description": "The bank account's name.",
-            "default": "null",
             "maxLength": 50,
             "nullable": true,
             "example": "My bank account"
@@ -82754,7 +81947,6 @@
           "bankBranchNumber": {
             "type": "string",
             "description": "The bank account's branch number.",
-            "default": "null",
             "maxLength": 10,
             "pattern": "^[0-9]*$",
             "nullable": true,
@@ -82763,7 +81955,6 @@
           "bankAccountNumber": {
             "type": "string",
             "description": "The bank account's number.",
-            "default": "null",
             "maxLength": 50,
             "pattern": "^[0-9]*$",
             "nullable": true,
@@ -85188,42 +84379,36 @@
           "project": {
             "type": "string",
             "description": "The id or full name of the project on which the time was spent on.\nNote that the full name includes the name(s) of any parent project(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "John's new garage"
           },
           "customer": {
             "type": "string",
             "description": "The id or name of the customer for whom the time was spent on.",
-            "default": "null",
             "nullable": true,
             "example": "John Smith"
           },
           "classification": {
             "type": "string",
             "description": "The id or name of the classification.",
-            "default": "null",
             "nullable": true,
             "example": "Classification A"
           },
           "billable": {
             "type": "boolean",
             "description": "Whether the time can be billed to a customer.",
-            "default": "null",
             "nullable": true,
             "example": true
           },
           "item": {
             "type": "string",
             "description": "The id or full name of the item that the time entry relates to.\nNote that the full name includes the name(s) of any parent item(s) separated by colons.",
-            "default": "null",
             "nullable": true,
             "example": "Parent item:Child item"
           },
           "payrollItem": {
             "type": "string",
             "description": "The id or full name of the payroll pay item that the time entry relates to.",
-            "default": "null",
             "nullable": true,
             "example": "Standard hours"
           },
@@ -85238,14 +84423,12 @@
           "notes": {
             "type": "string",
             "description": "Notes related to the time entry.",
-            "default": "null",
             "nullable": true,
             "example": "This is a note."
           },
           "declineReason": {
             "type": "string",
             "description": "Reason why time entry approval was declined.\nNote that this cannot be set via POST.",
-            "default": "null",
             "nullable": true,
             "example": "I don't approve of this."
           }
