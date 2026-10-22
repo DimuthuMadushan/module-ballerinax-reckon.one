@@ -8,6 +8,7 @@ This example creates a customer in a Reckon One book, raises an invoice for that
 - Create a `Config.toml` in this directory:
   ```toml
   accessToken = "<your-access-token>"
+  subscriptionKey = "<your-subscription-key>"
   bookId = "<your-book-id>"
   customerName = "<new-customer-name>"
   incomeLedgerAccount = "<income-ledger-account-id-or-full-name>"

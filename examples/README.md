@@ -8,7 +8,7 @@ The `ballerinax/reckon.one` connector provides practical examples illustrating u
 ## Prerequisites
 
 - Ballerina Swan Lake 2201.12.0 or later
-- An access token for a Reckon One book. Each example documents the `Config.toml` values it needs.
+- An access token for a Reckon One book and the Reckon One API subscription key, which every example sends in the `Ocp-Apim-Subscription-Key` header. Each example documents the `Config.toml` values it needs.
 
 ## Running an example
 

@@ -10,7 +10,8 @@
     {
       "oauth2": [
         "read",
-        "write"
+        "write",
+        "offline_access"
       ]
     }
   ],
@@ -51231,7 +51232,8 @@
             "refreshUrl": "https://identity.reckon.com/connect/token",
             "scopes": {
               "read": "Read access to Reckon One data",
-              "write": "Write access to Reckon One data"
+              "write": "Write access to Reckon One data",
+              "offline_access": "Issue a refresh token so access can be renewed"
             }
           }
         }

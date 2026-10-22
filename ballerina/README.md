@@ -18,11 +18,13 @@ To use the Reckon One connector you need an access token for a Reckon One book.
 
 2. Register an application with Reckon so that you receive a client ID and client secret for the Reckon One API.
 
-3. Authorize your application with the OAuth 2.0 authorization code flow against the Reckon identity server (`https://identity.reckon.com/connect/authorize`), granting the `read` and `write` scopes.
+3. Authorize your application with the OAuth 2.0 authorization code flow against the Reckon identity server (`https://identity.reckon.com/connect/authorize`), requesting the `read`, `write` and `offline_access` scopes. The `offline_access` scope is what makes Reckon issue a refresh token.
 
 4. Exchange the authorization code for an access token, and a refresh token, at `https://identity.reckon.com/connect/token`.
 
-5. Note the ID of the book you want to work with. You can list the books available to your user with the connector's `listBooks` operation.
+5. Get your subscription key. Sign in to the Reckon Developer Portal, open your user profile and copy the **Primary key**. Reckon One API v2 requires this key on every call. Send it in the `Ocp-Apim-Subscription-Key` header on every call, by passing it in the `headers` argument of each connector operation.
+
+6. Note the ID of the book you want to work with. You can list the books available to your user with the connector's `listBooks` operation.
 
 ## Quickstart
 
@@ -36,16 +38,18 @@ import ballerinax/reckon.one;
 
 ### Step 2: Create a new connector instance
 
-Add the access token to a `Config.toml` file:
+Add the access token and the subscription key to a `Config.toml` file:
 
 ```toml
 accessToken = "<your-access-token>"
+subscriptionKey = "<your-subscription-key>"
 ```
 
 Then create the client in your `.bal` file:
 
 ```ballerina
 configurable string accessToken = ?;
+configurable string subscriptionKey = ?;
 
 final one:Client reckon = check new ({auth: {token: accessToken}});
 ```
@@ -54,7 +58,7 @@ final one:Client reckon = check new ({auth: {token: accessToken}});
 
 ```ballerina
 public function main() returns error? {
-    one:Books _ = check reckon->listBooks();
+    one:Books _ = check reckon->listBooks(headers = {"Ocp-Apim-Subscription-Key": subscriptionKey});
 }
 ```
 
